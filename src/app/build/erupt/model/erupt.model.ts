@@ -57,6 +57,8 @@ interface Layout {
     formSize: FormSize;
     tableLeftFixed: number;
     tableRightFixed: number;
+    pageSize: number;
+    pageSizes: number[];
 }
 
 
