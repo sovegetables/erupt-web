@@ -1,38 +1,25 @@
 import {Component, ElementRef, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
-import {
-    Area,
-    AreaOptions,
-    Bar,
-    BarOptions,
-    Chord,
-    ChordOptions,
-    Column,
-    ColumnOptions,
-    Funnel,
-    FunnelOptions,
-    Line,
-    LineOptions,
-    Pie,
-    PieOptions,
-    Radar,
-    RadarOptions,
-    RadialBar,
-    RadialBarOptions,
-    Rose,
-    RoseOptions,
-    Sankey,
-    SankeyOptions,
-    Scatter,
-    ScatterOptions,
-    Waterfall,
-    WaterfallOptions,
-    WordCloud,
-    WordCloudOptions
-} from "@antv/g2plot";
+import {Area,AreaOptions, Bar,  BarOptions, Chord, ChordOptions, Column, ColumnOptions, Funnel, FunnelOptions, Line, LineOptions, Pie, PieOptions, Radar, RadarOptions, RadialBar, RadialBarOptions, Rose, RoseOptions, Sankey, SankeyOptions, Scatter, ScatterOptions, Waterfall, WaterfallOptions, WordCloud, WordCloudOptions} from "@antv/g2plot";
 import {Bi, Chart, ChartType} from "../model/bi.model";
 import {BiDataService} from "../service/data.service";
 import {HandlerService} from "../service/handler.service";
 import {NzMessageService} from "ng-zorro-antd/message";
+import {
+    Area,
+    Bar,
+    Chord,
+    Column,
+    Funnel,
+    Line,
+    Pie,
+    Radar,
+    RadialBar,
+    Rose,
+    Sankey,
+    Scatter,
+    Waterfall,
+    WordCloud
+} from "@antv/g2plot";
 import {ChartTableComponent} from "../chart-table/chart-table.component";
 
 @Component({
@@ -50,8 +37,6 @@ export class ChartComponent implements OnInit, OnDestroy {
     @Output() buildDimParam = new EventEmitter();
 
     @ViewChild('chartTable', {static: false}) chartTable: ChartTableComponent | null;
-
-    open: boolean = true;
 
     plot;
 
@@ -178,6 +163,7 @@ export class ChartComponent implements OnInit, OnDestroy {
 
         switch (this.chart.type) {
             case ChartType.Line:
+                // @ts-ignore
                 this.plot = new Line(
                     this.chart.code,
                     Object.assign(props, {
@@ -186,6 +172,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.StepLine:
+                // @ts-ignore
                 this.plot = new Line(
                     this.chart.code,
                     Object.assign(props, {
@@ -195,6 +182,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Bar:
+                // @ts-ignore
                 this.plot = new Bar(
                     this.chart.code,
                     Object.assign(props, {
@@ -203,6 +191,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.PercentStackedBar:
+                // @ts-ignore
                 this.plot = new Bar(
                     this.chart.code,
                     Object.assign(props, {
@@ -213,6 +202,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Waterfall:
+                // @ts-ignore
                 this.plot = new Waterfall(
                     this.chart.code,
                     Object.assign(props, {
@@ -225,6 +215,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Column:
+                // @ts-ignore
                 this.plot = new Column(
                     this.chart.code,
                     Object.assign(props, {
@@ -234,6 +225,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.StackedColumn:
+                // @ts-ignore
                 this.plot = new Column(
                     this.chart.code,
                     Object.assign(props, {
@@ -245,6 +237,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Area:
+                // @ts-ignore
                 this.plot = new Area(
                     this.chart.code,
                     Object.assign(props, {
@@ -253,6 +246,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.PercentageArea:
+                // @ts-ignore
                 this.plot = new Area(
                     this.chart.code,
                     Object.assign(props, {
@@ -262,6 +256,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Pie:
+                // @ts-ignore
                 this.plot = new Pie(
                     this.chart.code,
                     Object.assign(props, {
@@ -271,6 +266,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Ring:
+                // @ts-ignore
                 this.plot = new Pie(
                     this.chart.code,
                     Object.assign(props, {
@@ -282,6 +278,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Rose:
+                // @ts-ignore
                 this.plot = new Rose(
                     this.chart.code,
                     Object.assign(props, {
@@ -300,6 +297,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Funnel:
+                // @ts-ignore
                 this.plot = new Funnel(
                     this.chart.code,
                     Object.assign(props, {
@@ -310,6 +308,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Radar:
+                // @ts-ignore
                 this.plot = new Radar(
                     this.chart.code,
                     Object.assign(props, {
@@ -346,6 +345,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Scatter:
+                // @ts-ignore
                 this.plot = new Scatter(
                     this.chart.code,
                     Object.assign(props, {
@@ -373,6 +373,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Bubble:
+                // @ts-ignore
                 this.plot = new Scatter(
                     this.chart.code,
                     Object.assign(props, {
@@ -388,6 +389,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 break;
 
             case ChartType.WordCloud:
+                // @ts-ignore
                 this.plot = new WordCloud(
                     this.chart.code,
                     Object.assign(props, {
@@ -399,6 +401,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Sankey:
+                // @ts-ignore
                 this.plot = new Sankey(
                     this.chart.code,
                     Object.assign(props, {
@@ -412,6 +415,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.Chord:
+                // @ts-ignore
                 this.plot = new Chord(
                     this.chart.code,
                     Object.assign(props, {
@@ -422,6 +426,7 @@ export class ChartComponent implements OnInit, OnDestroy {
                 );
                 break;
             case ChartType.RadialBar:
+                // @ts-ignore
                 this.plot = new RadialBar(
                     this.chart.code,
                     Object.assign(props, {
