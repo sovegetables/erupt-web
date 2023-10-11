@@ -68,11 +68,11 @@ export class StartupService {
             eruptEvent.startup && eruptEvent.startup();
         }
         //路由复用
-        this.settingSrv.layout['reuse'] = !!this.settingSrv.layout['reuse'];
+        this.settingSrv.layout['reuse'] = true;
         //表格边框
-        this.settingSrv.layout['bordered'] = false !== this.settingSrv.layout['bordered'];
+        this.settingSrv.layout['bordered'] = true;
         //面包靴导航
-        this.settingSrv.layout['breadcrumbs'] = false !== this.settingSrv.layout['breadcrumbs'];
+        this.settingSrv.layout['breadcrumbs'] = false;
 
         if (this.settingSrv.layout['reuse']) {
             this.reuseTabService.mode = 0;

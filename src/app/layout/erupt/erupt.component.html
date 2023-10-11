@@ -5,7 +5,7 @@
                    [menu]="menu"></layout-header>
     <layout-sidebar class="erupt-side alain-default__aside"></layout-sidebar>
     <section class="erupt_content">
-        <reuse-tab *ngIf="settingSrv.layout['reuse']" [max]="30" tabType="card" [tabBarGutter]="0"
+        <reuse-tab *ngIf="settingSrv.layout['reuse']" [max]="30" tabType="line" [tabBarGutter]="0"
                    [tabMaxWidth]="180"></reuse-tab>
         <router-outlet></router-outlet>
     </section>
