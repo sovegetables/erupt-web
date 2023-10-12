@@ -8,7 +8,7 @@ window.eruptSiteConfig = {
     copyright: true, //是否保留显示版权信息
     logoPath: '/assets/logo.png',
     loginLogoPath: '/assets/logo.png',
-    logoText: "全塑智联MES",
+    logoText: "MES",
     registerPage: null,
     amapKey: '',
     amapSecurityJsCode: "",
