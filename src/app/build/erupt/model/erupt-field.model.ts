@@ -52,6 +52,7 @@ export interface Edit {
     desc: string;
     type: EditType;
     show: boolean;
+    editShow: boolean;
     showBy: { dependField: string, expr: string };
     readOnly: Readonly;
     placeHolder: string;

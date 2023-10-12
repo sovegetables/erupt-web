@@ -1,3 +1,17 @@
+<div style="display: flex;flex-direction: row" *ngIf="eruptTreeModel!= null">
+    <div>
+        <button nz-button nzType="default" class="mb-sm" (click)="addRow()" id="erupt-btn-add">
+            {{'table.add'|translate}}
+        </button>
+        <button nz-button (click)="edit()" [disabled]="loading" id="erupt-btn-save">
+            {{'global.editor'|translate}}
+        </button>
+        <button nz-button class="mb-sm" [nzLoading]="deleting" id="erupt-btn-delete"
+                (click)="delRows()">
+            {{'global.delete'|translate}}
+        </button>
+    </div>
+</div>
 <nz-input-group [nzSuffix]="suffixIcon" class="mb-sm" style="width: 100%;margin-bottom: 0">
     <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue">
 </nz-input-group>

@@ -35,6 +35,8 @@ export class EditComponent implements OnInit, OnDestroy {
 
     eruptFieldModelMap: Map<String, EruptFieldModel>;
 
+    @Input() initEruptFieldModelMap: Map<String, EruptFieldModel>;
+
     constructor(
         @Inject(NzMessageService)
         private msg: NzMessageService,

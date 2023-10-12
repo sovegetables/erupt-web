@@ -1,6 +1,7 @@
 <div *ngIf="eruptBuildModel!=null">
     <nz-spin [nzSpinning]="loading">
         <erupt-edit-type [loading]="loading" #eruptEdit [eruptBuildModel]="eruptBuildModel" [readonly]="readonly"
+                         [initEruptFieldModelMap] = 'initEruptFieldModelMap'
                          [mode]="behavior"></erupt-edit-type>
         <nz-tabset *ngIf="eruptBuildModel.tabErupts" [nzType]="'card'" style="margin-top: 5px">
             <ng-container *ngFor="let item of eruptBuildModel.tabErupts | keyvalue">

@@ -1,5 +1,6 @@
 import {EruptFieldModel, Tpl, View} from "./erupt-field.model";
 import {FormSize, OperationIfExprBehavior, OperationMode, OperationType} from "./erupt.enum";
+import {EruptBuildModel} from "./erupt-build.model";
 
 
 export interface EruptModel {
@@ -54,6 +55,7 @@ interface LinkTree {
     field: string;
     dependNode: boolean;
     value: any;
+    model: EruptBuildModel
 }
 
 export interface Drill {

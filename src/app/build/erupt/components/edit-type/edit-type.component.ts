@@ -71,6 +71,8 @@ export class EditTypeComponent implements OnInit, OnDestroy, DoCheck {
 
     supportCopy: boolean;
 
+    @Input() initEruptFieldModelMap: Map<String, EruptFieldModel>;
+
     constructor(public dataService: DataService,
                 private differs: KeyValueDiffers,
                 private i18n: I18NService,
@@ -137,6 +139,16 @@ export class EditTypeComponent implements OnInit, OnDestroy, DoCheck {
                         choice.dependChange(value);
                     }
                 });
+            }
+        }
+        if (this.initEruptFieldModelMap) {
+            for (let model of this.eruptModel.eruptFieldModels) {
+                let edit = model.eruptFieldJson.edit;
+                let fieldModel = this.initEruptFieldModelMap.get(model.fieldName);
+                if (fieldModel) {
+                    edit.$value = fieldModel.eruptFieldJson.edit.$value
+                    edit.$viewValue = fieldModel.eruptFieldJson.edit.$viewValue
+                }
             }
         }
     }
