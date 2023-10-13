@@ -59,7 +59,7 @@ export class ReferenceComponent implements OnInit {
         this.modal.create({
             nzWrapClassName: "modal-xs",
             nzKeyboard: true,
-            nzStyle: {top: "30px"},
+            nzStyle: {top: "5vh"},
             nzTitle: field.eruptFieldJson.edit.title + (field.eruptFieldJson.edit.$viewValue ? "【" + field.eruptFieldJson.edit.$viewValue + "】" : ""),
             nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",
             nzContent: TreeSelectComponent,
@@ -101,7 +101,7 @@ export class ReferenceComponent implements OnInit {
         this.modal.create({
             nzWrapClassName: "modal-xxl",
             nzKeyboard: true,
-            nzStyle: {top: "24px"},
+            nzStyle: {top: "5vh"},
             nzBodyStyle: {padding: "16px"},
             nzTitle: edit.title + (field.eruptFieldJson.edit.$viewValue ? "【" + field.eruptFieldJson.edit.$viewValue + "】" : ""),
             nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",

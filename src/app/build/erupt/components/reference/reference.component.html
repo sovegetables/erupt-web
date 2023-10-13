@@ -1,9 +1,6 @@
 <nz-input-group [nzSize]="size" class="erupt-input" [nzAddOnAfter]="readonly?null:refBtn">
     <input nz-input [nzSize]="size"
-           autocomplete="off"
            [required]="field.eruptFieldJson.edit.notNull"
-           (click)="createReferenceModal(field)"
-           [readOnly]="true"
            [disabled]="readonly"
            [placeholder]="field.eruptFieldJson.edit.placeHolder"
            [(ngModel)]="field.eruptFieldJson.edit.$viewValue"
@@ -15,9 +12,7 @@
            (click)="clearReferValue(field)"></i>
     </ng-container>
     <ng-container *ngIf="!field.eruptFieldJson.edit.$value">
-        <i nz-icon
-           (click)="createReferenceModal(field)"
-           nzType="database" theme="fill" class="point"></i>
+        <span style="cursor: pointer" nz-icon (click)="createReferenceModal(field)" nzType="search" nzTheme="outline"></span>
     </ng-container>
 </ng-template>
 

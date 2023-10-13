@@ -44,7 +44,6 @@ import {AppViewService} from "@shared/service/app-view.service";
 })
 export class TableComponent implements OnInit {
 
-
     constructor(
         public settingSrv: SettingsService,
         public dataService: DataService,
@@ -238,7 +237,13 @@ export class TableComponent implements OnInit {
                 index: this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol
             });
         }
-        let viewCols = this.uiBuildService.viewToAlainTableConfig(this.eruptBuildModel, true);
+        let that = this
+        let viewCols = this.uiBuildService.viewToAlainTableConfig(this.eruptBuildModel, true,
+            null, this.dataHandler, new class implements TableRefreshing {
+                refresh(): any {
+                    that.stLoad()
+                }
+            });
         for (let viewCol of viewCols) {
             viewCol.iif = () => {
                 return viewCol['show'];
@@ -246,7 +251,7 @@ export class TableComponent implements OnInit {
         }
         _columns.push(...viewCols);
         const tableOperators: STColumnButton[] = [];
-        if (this.eruptBuildModel.eruptModel.eruptJson.power.viewDetails) {
+        /*if (this.eruptBuildModel.eruptModel.eruptJson.power.viewDetails) {
             let fullLine = false;
             let layout = this.eruptBuildModel.eruptModel.eruptJson.layout;
             if (layout && layout.formSize == FormSize.FULL_LINE) {
@@ -274,8 +279,8 @@ export class TableComponent implements OnInit {
                     });
                 }
             });
-        }
-        let tableButtons: STColumnButton[] = []
+        }*/
+        /*let tableButtons: STColumnButton[] = []
         let editButtons: ModalButtonOptions[] = [];
         const that = this;
         let exprEval = (expr, item) => {
@@ -289,8 +294,8 @@ export class TableComponent implements OnInit {
                 // this.msg.error(e);
                 return false;
             }
-        }
-        for (let i in this.eruptBuildModel.eruptModel.eruptJson.rowOperation) {
+        }*/
+        /*for (let i in this.eruptBuildModel.eruptModel.eruptJson.rowOperation) {
             let ro = this.eruptBuildModel.eruptModel.eruptJson.rowOperation[i];
             if (ro.mode !== OperationMode.BUTTON) {
                 let text = "";
@@ -312,18 +317,8 @@ export class TableComponent implements OnInit {
                         return exprEval(ro.ifExpr, item);
                     }
                 });
-                // editButtons.push({
-                //     label: ro.title,
-                //     type: 'dashed',
-                //     show: (options: ModalButtonOptions<any>) => {
-                //         return !ro.ifExpr;
-                //     },
-                //     onClick(options: ModalButtonOptions<any>) {
-                //         that.createOperator(ro, options);
-                //     }
-                // })
             }
-        }
+        }*/
 
         //drill
         const eruptJson = this.eruptBuildModel.eruptModel.eruptJson;
@@ -349,7 +344,7 @@ export class TableComponent implements OnInit {
             });
         }
 
-        for (let i in eruptJson.drills) {
+        /*for (let i in eruptJson.drills) {
             let drill = eruptJson.drills[i];
             tableButtons.push({
                 type: 'link',
@@ -366,17 +361,17 @@ export class TableComponent implements OnInit {
                     createDrillModel(drill, options['id']);
                 }
             })
-        }
+        }*/
 
-        let getEditButtons = (record): ModalButtonOptions[] => {
+        /*let getEditButtons = (record): ModalButtonOptions[] => {
             for (let editButton of editButtons) {
                 editButton['id'] = record[this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol]
                 editButton['data'] = record
             }
             return editButtons;
-        }
+        }*/
 
-        if (this.eruptBuildModel.eruptModel.eruptJson.power.edit) {
+        /*if (this.eruptBuildModel.eruptModel.eruptJson.power.edit) {
             let fullLine = false;
             let layout = this.eruptBuildModel.eruptModel.eruptJson.layout;
             if (layout && layout.formSize == FormSize.FULL_LINE) {
@@ -434,8 +429,8 @@ export class TableComponent implements OnInit {
                     });
                 }
             });
-        }
-        if (this.eruptBuildModel.eruptModel.eruptJson.power.delete) {
+        }*/
+       /* if (this.eruptBuildModel.eruptModel.eruptJson.power.delete) {
             tableOperators.push({
                 icon: {
                     type: "delete",
@@ -459,8 +454,8 @@ export class TableComponent implements OnInit {
                         });
                 }
             });
-        }
-        tableOperators.push(...tableButtons);
+        }*/
+        // tableOperators.push(...tableButtons);
         if (tableOperators.length > 0) {
             _columns.push({
                 title: this.i18n.fanyi("table.operation"),
@@ -774,5 +769,9 @@ export class TableComponent implements OnInit {
         });
     }
 
+}
+
+export interface TableRefreshing{
+    refresh(): any;
 }
 

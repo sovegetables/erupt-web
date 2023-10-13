@@ -1,5 +1,5 @@
 import {EruptBuildModel} from "../model/erupt-build.model";
-import {DateEnum, EditType, ViewType} from "../model/erupt.enum";
+import {DateEnum, EditType, FormSize, Scene, ViewType} from "../model/erupt.enum";
 import {ViewTypeComponent} from "../components/view-type/view-type.component";
 import {MarkdownComponent} from "../components/markdown/markdown.component";
 import {CodeEditorComponent} from "../components/code-editor/code-editor.component";
@@ -11,6 +11,12 @@ import {NzModalService} from "ng-zorro-antd/modal";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {NzImageService} from "ng-zorro-antd/image";
 import {EruptIframeComponent} from "@shared/component/iframe.component";
+import {EditComponent} from "../view/edit/edit.component";
+import {Status} from "../model/erupt-api.model";
+import {DataHandlerService} from "./data-handler.service";
+import {ModalButtonOptions} from "ng-zorro-antd/modal/modal-types";
+import {Drill} from "../model/erupt.model";
+import {TableComponent, TableRefreshing} from "../view/table/table.component";
 
 
 @Injectable()
@@ -32,8 +38,11 @@ export class UiBuildService {
      *     true   数据形式为一整行txt
      *     false  数据形式为：带有层级的json
      * @param dataConvert 是否需要数据转换,如bool转换，choice转换
+     * @param dataHandler
+     * @param refreshing
      */
-    viewToAlainTableConfig(eruptBuildModel: EruptBuildModel, lineData: boolean, dataConvert?: boolean): STColumn[] {
+    viewToAlainTableConfig(eruptBuildModel: EruptBuildModel, lineData: boolean, dataConvert?: boolean,
+                           dataHandler?: DataHandlerService, refreshing?: TableRefreshing): STColumn[] {
         let cols: STColumn[] = [];
         const views = eruptBuildModel.eruptModel.tableColumns;
         let layout = eruptBuildModel.eruptModel.eruptJson.layout;
@@ -53,7 +62,7 @@ export class UiBuildService {
             let obj: STColumn = {
                 title: {
                     text: view.title,
-                    optional: "   ",
+                    // optional: "",
                     optionalHelp: view.desc
                 }
             };
@@ -113,10 +122,11 @@ export class UiBuildService {
             switch (view.viewType) {
                 case ViewType.TEXT:
                     obj.className = "text-col";
-                    obj.width = null;
+                    obj.width = titleWidth + 20;
                     break;
                 case ViewType.NUMBER:
                     obj.className = "text-right";
+                    obj.width = view.title.length;
                     break;
                 case ViewType.DATE:
                     obj.className = "date-col";
@@ -139,7 +149,7 @@ export class UiBuildService {
                     break;
                 case ViewType.BOOLEAN:
                     obj.className = "text-center";
-                    obj.width += 12;
+                    obj.width += 15;
                     obj.type = "tag";
                     if (dataConvert) {
                         obj.tag = {
@@ -594,6 +604,136 @@ export class UiBuildService {
                 obj.width = titleWidth + 50;
             }
             cols.push(obj);
+            if(i == 0){
+                obj.type = 'link'
+                obj.click = (item) => {
+                    let fullLine = false;
+                    let layout = eruptBuildModel.eruptModel.eruptJson.layout;
+                    if (layout && layout.formSize == FormSize.FULL_LINE) {
+                        fullLine = true;
+                    }
+                    if (eruptBuildModel.eruptModel.eruptJson.power.edit) {
+                        let editButtons: ModalButtonOptions[] = [];
+                        const that = this;
+                        let exprEval = (expr, item) => {
+                            try {
+                                if (expr) {
+                                    return eval(expr);
+                                } else {
+                                    return true;
+                                }
+                            } catch (e) {
+                                // this.msg.error(e);
+                                return false;
+                            }
+                        }
+                        //drill
+                        const eruptJson = eruptBuildModel.eruptModel.eruptJson;
+                        let createDrillModel = (drill: Drill, id) => {
+                            this.modal.create({
+                                nzWrapClassName: "modal-xxl",
+                                nzStyle: {top: "30px"},
+                                nzBodyStyle: {padding: "18px"},
+                                nzMaskClosable: false,
+                                nzKeyboard: false,
+                                nzTitle: drill.title,
+                                nzFooter: null,
+                                nzContent: TableComponent,
+                                nzComponentParams: {
+                                    drill: {
+                                        code: drill.code,
+                                        val: id,
+                                        erupt: drill.link.linkErupt,
+                                        eruptParent: eruptBuildModel.eruptModel.eruptName
+                                    }
+                                }
+                            });
+                        }
+                        for (let i in eruptJson.drills) {
+                            let drill = eruptJson.drills[i];
+                            editButtons.push({
+                                label: drill.title,
+                                type: 'dashed',
+                                onClick(options: ModalButtonOptions<any>) {
+                                    createDrillModel(drill, options['id']);
+                                }
+                            })
+                        }
+                        let getEditButtons = (record): ModalButtonOptions[] => {
+                            for (let editButton of editButtons) {
+                                editButton['id'] = record[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol]
+                                editButton['data'] = record
+                            }
+                            return editButtons;
+                        }
+                        const model = this.modal.create({
+                            nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
+                            nzWidth: fullLine ? 550 : null,
+                            nzStyle: {top: "60px"},
+                            nzMaskClosable: false,
+                            nzKeyboard: false,
+                            nzTitle: this.i18n.fanyi("global.editor"),
+                            nzOkText: this.i18n.fanyi("global.update"),
+                            nzContent: EditComponent,
+                            nzComponentParams: {
+                                eruptBuildModel: eruptBuildModel,
+                                id: item[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
+                                behavior: Scene.EDIT,
+                            },
+                            nzFooter: [
+                                {
+                                    label: this.i18n.fanyi("global.cancel"),
+                                    onClick: () => {
+                                        model.close();
+                                    }
+                                },
+                                ...getEditButtons(item),
+                                {
+                                    label: this.i18n.fanyi("global.update"),
+                                    type: "primary",
+                                    onClick: () => {
+                                        return model.triggerOk();
+                                    }
+                                },
+                            ],
+                            nzOnOk: async () => {
+                                let validateResult = model.getContentComponent().beforeSaveValidate();
+                                if (validateResult && dataHandler) {
+                                    let obj = dataHandler.eruptValueToObject(eruptBuildModel);
+                                    let res = await this.dataService.updateEruptData(eruptBuildModel.eruptModel.eruptName, obj).toPromise().then(res => res);
+                                    if (res.status === Status.SUCCESS) {
+                                        this.msg.success(this.i18n.fanyi("global.update.success"));
+                                        refreshing?.refresh()
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
+                                } else {
+                                    return false;
+                                }
+                            }
+                        });
+                    }else {
+                        this.modal.create({
+                            nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
+                            nzWidth: fullLine ? 550 : null,
+                            nzStyle: {top: "60px"},
+                            nzMaskClosable: true,
+                            nzKeyboard: true,
+                            nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",
+                            nzOkText: null,
+                            nzTitle: this.i18n.fanyi("global.view"),
+                            nzContent: EditComponent,
+                            nzComponentParams: {
+                                readonly: true,
+                                eruptBuildModel: eruptBuildModel,
+                                id: item[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
+                                behavior: Scene.EDIT,
+                            }
+                        });
+                    }
+                }
+            }
             i++;
         }
         return cols;

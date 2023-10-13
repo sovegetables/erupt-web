@@ -32,6 +32,8 @@ export class LayoutTreeComponent implements OnInit {
 
     @Input() eruptModel: EruptModel;
 
+    @Input() _reference: any;
+
     @Output() trigger = new EventEmitter();
 
     searchValue: string;
