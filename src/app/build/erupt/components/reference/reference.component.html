@@ -4,6 +4,9 @@
            [disabled]="readonly"
            [placeholder]="field.eruptFieldJson.edit.placeHolder"
            [(ngModel)]="field.eruptFieldJson.edit.$viewValue"
+           (ngModelChange)="onChange($event)"
+           (keydown)="enterEvent($event)"
+           [nzAutocomplete]="auto"
            [name]="field.fieldName">
 </nz-input-group>
 <ng-template #refBtn>
@@ -15,4 +18,9 @@
         <span style="cursor: pointer" nz-icon (click)="createReferenceModal(field)" nzType="search" nzTheme="outline"></span>
     </ng-container>
 </ng-template>
+<nz-autocomplete (selectionChange)="onSelectionChange($event)" #auto>
+    <nz-auto-option class="global-search-item" *ngFor="let option of autoCompleteOptions" [nzValue]="option" [nzLabel]="option.value">
+        {{ option.value }}
+    </nz-auto-option>
+</nz-autocomplete>
 

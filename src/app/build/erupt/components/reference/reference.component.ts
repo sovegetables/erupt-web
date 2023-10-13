@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {EruptFieldModel} from "../../model/erupt-field.model";
 import {NzSizeLDSType} from "ng-zorro-antd/core/types";
 import {TreeSelectComponent} from "../tree-select/tree-select.component";
@@ -8,6 +8,9 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {EruptModel} from "../../model/erupt.model";
 import {I18NService} from "@core";
 import {TableComponent} from "../../view/table/table.component";
+import {DataHandlerService} from "../../service/data-handler.service";
+import {DataService} from "@shared/service/data.service";
+import {QueryCondition} from "../../model/erupt.vo";
 
 @Component({
     selector: 'erupt-reference',
@@ -28,12 +31,40 @@ export class ReferenceComponent implements OnInit {
 
     editType = EditType;
 
+    nzFilterOption = (): boolean => true
+
+    autoCompleteOptions: Array<{value: string, id: string}> = [];
+
     constructor(@Inject(NzModalService) private modal: NzModalService,
                 @Inject(NzMessageService) private msg: NzMessageService,
+                private dataService: DataService,
                 private i18n: I18NService,) {
     }
 
     ngOnInit(): void {
+    }
+
+    onSelectionChange(event: any){
+        const item = event.nzValue;
+        this.field.eruptFieldJson.edit.$viewValue = item.value;
+        this.field.eruptFieldJson.edit.$value = item.id;
+        this.field.eruptFieldJson.edit.$tempValue = null;
+    }
+
+    onChange(e: String): void {
+        const conditions: QueryCondition[] = [];
+        let body = {
+            condition: conditions
+        };
+        let label = this.field.eruptFieldJson.edit.referenceTableType.label;
+        conditions.push({key: label, value: e})
+        this.dataService.queryEruptTableData(this.field.fieldClassName,
+            {pageIndex: 1, pageSize: 10}, body).subscribe(data => {
+            this.autoCompleteOptions = []
+            data.list.forEach(i => {
+                this.autoCompleteOptions.push({value: i[label], id:i["id"]})
+            })
+        })
     }
 
     createReferenceModal(field: EruptFieldModel) {
@@ -139,6 +170,9 @@ export class ReferenceComponent implements OnInit {
         field.eruptFieldJson.edit.$value = null;
         field.eruptFieldJson.edit.$viewValue = null;
         field.eruptFieldJson.edit.$tempValue = null;
+
+        this.autoCompleteOptions = []
+
         for (let eruptFieldModel of this.eruptModel.eruptFieldModels) {
             let edit = eruptFieldModel.eruptFieldJson.edit;
             if (edit.type == EditType.REFERENCE_TREE) {
@@ -154,4 +188,11 @@ export class ReferenceComponent implements OnInit {
         }
     }
 
+    @Output() search = new EventEmitter();
+
+    enterEvent(event: KeyboardEvent) {
+        if (event.which === 13) {
+            this.search.emit();
+        }
+    }
 }

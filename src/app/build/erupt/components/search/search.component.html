@@ -8,9 +8,11 @@
                              [nzXXl]="col.xxl">
                             <erupt-search-se [field]="field">
                                 <nz-input-group [nzSuffix]="suffixTemplate" class="erupt-input" [nzSize]="size">
-                                    <input nz-input [nzSize]="size" autocomplete="off"
+                                    <input nz-input [nzSize]="size"
+                                           [nzAutocomplete]="auto"
                                            [type]="field.eruptFieldJson.edit.inputType?field.eruptFieldJson.edit.inputType.type:'text'"
                                            [(ngModel)]="field.eruptFieldJson.edit.$value"
+                                           (ngModelChange)="onChange($event, field)"
                                            [name]="field.fieldName"
                                            (keydown)="enterEvent($event)"
                                            [placeholder]="field.eruptFieldJson.edit.placeHolder"
@@ -22,6 +24,11 @@
                                        *ngIf="field.eruptFieldJson.edit.$value"
                                        (click)="field.eruptFieldJson.edit.$value = null"></i>
                                 </ng-template>
+                                <nz-autocomplete (selectionChange)="onSelectionChange(field, $event)" #auto>
+                                    <nz-auto-option class="global-search-item" *ngFor="let option of autoCompleteOptions" [nzValue]="option.value" [nzLabel]="option.value">
+                                        {{ option.value }}
+                                    </nz-auto-option>
+                                </nz-autocomplete>
                             </erupt-search-se>
                         </div>
                     </ng-template>
@@ -189,7 +196,10 @@
                              [nzXl]="col.xl"
                              [nzXXl]="col.xxl">
                             <erupt-search-se [field]="field">
-                                <erupt-reference [eruptModel]="searchEruptModel" [field]="field" [readonly]="false"
+                                <erupt-reference [eruptModel]="searchEruptModel"
+                                                 [field]="field"
+                                                 [readonly]="false"
+                                                 (search)="onSearch()"
                                                  [size]="size"></erupt-reference>
                             </erupt-search-se>
                         </div>
@@ -199,7 +209,10 @@
                              [nzXl]="col.xl"
                              [nzXXl]="col.xxl">
                             <erupt-search-se [field]="field">
-                                <erupt-reference [eruptModel]="searchEruptModel" [field]="field" [readonly]="false"
+                                <erupt-reference [eruptModel]="searchEruptModel"
+                                                 [field]="field"
+                                                 [readonly]="false"
+                                                 (search)="onSearch()"
                                                  [size]="size"></erupt-reference>
                             </erupt-search-se>
                         </div>

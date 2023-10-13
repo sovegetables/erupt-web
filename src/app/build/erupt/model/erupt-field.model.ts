@@ -11,11 +11,13 @@ import {
 
 
 export interface EruptFieldModel {
+    modelName: string;
     fieldName: string;
+    fieldClassName: string;
+    primaryKeyCol: string;
     eruptFieldJson: EruptField;
     choiceMap?: Map<String, VL>;
     componentValue?: any;
-
     value?: any;
 }
 
@@ -113,6 +115,7 @@ interface InputType {
     length: number;
     type: string;
     fullSpan: boolean;
+    enableAutoComplete: boolean;
     prefix: VL[];
     suffix: VL[];
     prefixValue?: string;
