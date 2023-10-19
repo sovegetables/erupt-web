@@ -19,7 +19,7 @@
     </ng-container>
 </ng-template>
 <nz-autocomplete (selectionChange)="onSelectionChange($event)" #auto>
-    <nz-auto-option class="global-search-item" *ngFor="let option of autoCompleteOptions" [nzValue]="option" [nzLabel]="option.value">
+    <nz-auto-option class="global-search-item" *ngFor="let option of autoCompleteOptions" [nzValue]="option.id" [nzLabel]="option.value">
         {{ option.value }}
     </nz-auto-option>
 </nz-autocomplete>

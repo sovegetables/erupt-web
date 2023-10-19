@@ -73,6 +73,8 @@ export class StartupService {
         this.settingSrv.layout['bordered'] = true;
         //面包靴导航
         this.settingSrv.layout['breadcrumbs'] = false;
+        //面包靴导航
+        this.settingSrv.layout['fixed'] = true;
 
         if (this.settingSrv.layout['reuse']) {
             this.reuseTabService.mode = 0;

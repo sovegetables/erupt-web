@@ -45,10 +45,8 @@ export class ReferenceComponent implements OnInit {
     }
 
     onSelectionChange(event: any){
-        const item = event.nzValue;
-        this.field.eruptFieldJson.edit.$viewValue = item.value;
-        this.field.eruptFieldJson.edit.$value = item.id;
-        this.field.eruptFieldJson.edit.$tempValue = null;
+        this.field.eruptFieldJson.edit.$viewValue = event.nzLabel;
+        this.field.eruptFieldJson.edit.$value = event.nzValue;
     }
 
     onChange(e: String): void {

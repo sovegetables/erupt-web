@@ -604,7 +604,7 @@ export class UiBuildService {
                 obj.width = titleWidth + 50;
             }
             cols.push(obj);
-            if(i == 0){
+            if(view.highlight){
                 obj.type = 'link'
                 obj.click = (item) => {
                     let fullLine = false;
@@ -713,7 +713,7 @@ export class UiBuildService {
                                 }
                             }
                         });
-                    }else {
+                    }else if(eruptBuildModel.eruptModel.eruptJson.power.viewDetails){
                         this.modal.create({
                             nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
                             nzWidth: fullLine ? 550 : null,

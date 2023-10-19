@@ -199,7 +199,7 @@ export class DefaultInterceptor implements HttpInterceptor {
                     });
                 } else {
                     this.modal.error({
-                        nzTitle: 'Error',
+                        nzTitle: this.i18n.fanyi("global.error"),
                         nzContent: event.error.message
                     });
                     Object.assign(event, {

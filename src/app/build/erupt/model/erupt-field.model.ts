@@ -40,6 +40,7 @@ export interface View {
     width: string;
     desc: string;
     show: boolean;
+    highlight: boolean;
     viewType: ViewType;
     template: string;
     sortable: boolean;
@@ -58,6 +59,7 @@ export interface Edit {
     showBy: { dependField: string, expr: string };
     readOnly: Readonly;
     placeHolder: string;
+    searchPlaceHolder: string;
     search: Search;
     tabType: TabType;
     inputType: InputType;

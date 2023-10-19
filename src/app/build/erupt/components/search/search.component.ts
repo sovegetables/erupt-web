@@ -20,8 +20,7 @@ export class SearchComponent implements OnInit {
     @Output() search = new EventEmitter();
 
     @Input() size: "large" | "small" | "default" = "large";
-
-
+    
     @ViewChildren('choice') choices: QueryList<ChoiceComponent>;
 
     editType = EditType;
