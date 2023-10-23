@@ -143,11 +143,12 @@ export class DataService {
     }
 
     //分页数据对象
-    queryEruptTableData(eruptName: string, page: Page, body?: any): Observable<Page> {
+    queryEruptTableData(eruptName: string, page: Page, body?: any, header?: object): Observable<Page> {
         return this._http.post(RestPath.data + "/table/" + eruptName, {...page, ...body}, null, {
             observe: "body",
             headers: {
                 erupt: eruptName,
+                ...header,
                 ...this.getCommonHeader()
             }
         });
