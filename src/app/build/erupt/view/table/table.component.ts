@@ -107,6 +107,7 @@ export class TableComponent implements OnInit {
         data: any[];
         multiSort?: string[]
         page: STPage;
+        url: string
     } = {
         querying: false,
         showPagination: true,
@@ -120,7 +121,8 @@ export class TableComponent implements OnInit {
         page: {
             show: false,
             toTop: false
-        }
+        },
+        url: null
     };
 
     adding: boolean = false; //新增行为防抖
@@ -141,8 +143,10 @@ export class TableComponent implements OnInit {
     _reference: { eruptBuild: EruptBuildModel, eruptField: EruptFieldModel, mode: SelectMode };
 
     @Input() set referenceTable(reference: {
-        eruptBuild: EruptBuildModel, eruptField: EruptFieldModel, mode:
-            SelectMode, parentEruptName?: string, dependVal?: any, tabRef: boolean
+        eruptBuild: EruptBuildModel,
+        eruptField: EruptFieldModel, mode: SelectMode,
+        parentEruptName?: string,
+        dependVal?: any, tabRef: boolean
     }) {
         this._reference = reference;
         this.init(this.dataService.getEruptBuildByField(reference.eruptBuild.eruptModel.eruptName,
@@ -196,6 +200,7 @@ export class TableComponent implements OnInit {
         this.hasSearchFields = false;
         this.operationButtonNum = 0;
         this.header = req.header;
+        this.dataPage.url = req.url;
         observable.subscribe(eb => {
                 eb.eruptModel.eruptJson.rowOperation.forEach((item) => {
                     if (item.mode != OperationMode.SINGLE) {
@@ -274,7 +279,8 @@ export class TableComponent implements OnInit {
             sortString = arr.join(",")
         }
         this.dataPage.querying = true;
-        this.dataService.queryEruptTableData(this.eruptBuildModel.eruptModel.eruptName, {
+
+        this.dataService.queryEruptTableData(this.eruptBuildModel.eruptModel.eruptName, this.dataPage.url, {
             pageIndex: this.dataPage.pi,
             pageSize: this.dataPage.ps,
             sort: sortString,
@@ -813,6 +819,7 @@ export class TableComponent implements OnInit {
         this.showTable = true;
         this.eruptBuildModel.eruptModel.eruptJson.linkTree.value = event;
         this.searchErupt.eruptJson.linkTree.value = event;
+        console.log(this.dataPage)
         this.query(1);
     }
 
