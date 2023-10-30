@@ -2,12 +2,14 @@
     <ng-container *ngIf="!onlyRead">
         <div class="tab-bar">
             <button (click)="mode=='add'?addData():addDataByRefer()" nz-button nzGhost nzType="primary"
-                    [nzSize]="'default'">
-                <i nz-icon nzType="plus" theme="outline"></i>{{'global.new'|translate}}
+                    [nzSize]="'small'">
+<!--                <i nz-icon nzType="plus" theme="outline"></i>-->
+                {{'global.new'|translate}}
             </button>
             <button (click)="deleteData()" nz-button *ngIf="checkedRow.length>0"
-                    nzType="default" nzDanger [nzSize]="'default'">
-                <i nz-icon nzType="delete" theme="outline"></i>{{'global.delete'|translate}}
+                    nzType="default" nzDanger [nzSize]="'small'">
+<!--                <i nz-icon nzType="delete" theme="outline"></i>-->
+                {{'global.delete'|translate}}
             </button>
         </div>
     </ng-container>
@@ -17,6 +19,15 @@
             [size]="'small'" [columns]="column" [ps]="20"
             [data]="tabErupt.eruptFieldModel.eruptFieldJson.edit.$value"
             [bordered]="true" [page]="stConfig.stPage"
-        ></st>
+        >
+            <!--TODO-->
+<!--            <ng-template st-row="lineInputRow" let-item let-index="index">-->
+<!--                <erupt-reference [eruptModel]="tabErupt.eruptBuildModel.eruptModel"-->
+<!--                                 [field]="tabErupt.eruptBuildModel.eruptModel.tableColumns[index].eruptFieldModel"-->
+<!--                                 [readonly]="false"-->
+<!--                                 size="small">-->
+<!--                </erupt-reference>-->
+<!--            </ng-template>-->
+        </st>
     </nz-spin>
 </div>

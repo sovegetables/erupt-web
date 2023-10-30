@@ -6,6 +6,7 @@
            [(ngModel)]="field.eruptFieldJson.edit.$viewValue"
            (ngModelChange)="onChange($event)"
            (keydown)="enterEvent($event)"
+           (blur)="onBlurChange($event)"
            [nzAutocomplete]="auto"
            [name]="field.fieldName">
 </nz-input-group>

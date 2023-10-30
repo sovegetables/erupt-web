@@ -129,25 +129,25 @@ export class TabTableComponent implements OnInit {
                     }
                 });
             }
-            operators.push({
-                icon: {
-                    type: "delete",
-                    theme: "twotone",
-                    twoToneColor: "#f00"
-                },
-                type: "del",
-                click: (record, modal, comp: STComponent) => {
-                    let $value = this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$value;
-                    for (let i in <any[]>$value) {
-                        let tabPrimaryKeyCol = this.tabErupt.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol;
-                        if (record[tabPrimaryKeyCol] == $value[i][tabPrimaryKeyCol]) {
-                            $value.splice(i, 1);
-                            break;
-                        }
-                    }
-                    this.st.reload();
-                }
-            });
+            // operators.push({
+            //     icon: {
+            //         type: "delete",
+            //         theme: "twotone",
+            //         twoToneColor: "#f00"
+            //     },
+            //     type: "del",
+            //     click: (record, modal, comp: STComponent) => {
+            //         let $value = this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$value;
+            //         for (let i in <any[]>$value) {
+            //             let tabPrimaryKeyCol = this.tabErupt.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol;
+            //             if (record[tabPrimaryKeyCol] == $value[i][tabPrimaryKeyCol]) {
+            //                 $value.splice(i, 1);
+            //                 break;
+            //             }
+            //         }
+            //         this.st.reload();
+            //     }
+            // });
             viewValue.push({
                 title: this.i18n.fanyi("table.operation"),
                 fixed: "right",
@@ -160,7 +160,6 @@ export class TabTableComponent implements OnInit {
     }
 
     addData() {
-        // this.dataHandlerService.emptyEruptValue(this.tabErupt.eruptBuildModel);
         this.dataService.getInitValue(this.tabErupt.eruptBuildModel.eruptModel.eruptName, this.eruptBuildModel.eruptModel.eruptName).subscribe(data => {
             this.dataHandlerService.objectToEruptValue(data, this.tabErupt.eruptBuildModel);
             this.modal.create({

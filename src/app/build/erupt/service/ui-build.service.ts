@@ -72,6 +72,8 @@ export class UiBuildService {
                 obj.index = view.column.replace(/\./g, "_");
             } else {
                 obj.index = view.column;
+                //行编辑 todo
+                // obj["render"] = 'lineInputRow'
             }
             if (view.sortable) {
                 obj.sort = {
@@ -605,6 +607,7 @@ export class UiBuildService {
             }
             cols.push(obj);
             if(view.highlight){
+                //高亮,可编辑
                 obj.type = 'link'
                 obj.click = (item) => {
                     let fullLine = false;

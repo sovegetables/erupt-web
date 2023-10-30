@@ -49,6 +49,13 @@ export class ReferenceComponent implements OnInit {
         this.field.eruptFieldJson.edit.$value = event.nzValue;
     }
 
+    onBlurChange(event: any){
+        // 输入框失去焦点后, 没有选择建议值,重置输入内容
+        if(!this.field.eruptFieldJson.edit.$value){
+            this.field.eruptFieldJson.edit.$viewValue = ''
+        }
+    }
+
     onChange(e: String): void {
         const conditions: QueryCondition[] = [];
         let body = {
