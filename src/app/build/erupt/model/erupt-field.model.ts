@@ -19,6 +19,7 @@ export interface EruptFieldModel {
     choiceMap?: Map<String, VL>;
     componentValue?: any;
     value?: any;
+    serialNumber?: number;
 }
 
 

@@ -8,7 +8,6 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {EruptModel} from "../../model/erupt.model";
 import {I18NService} from "@core";
 import {TableComponent} from "../../view/table/table.component";
-import {DataHandlerService} from "../../service/data-handler.service";
 import {DataService} from "@shared/service/data.service";
 import {QueryCondition} from "../../model/erupt.vo";
 
@@ -29,11 +28,15 @@ export class ReferenceComponent implements OnInit {
 
     @Input() parentEruptName: string
 
+    @Input() enableAfterBtn = true;
+
     editType = EditType;
 
     nzFilterOption = (): boolean => true
 
     autoCompleteOptions: Array<{value: string, id: string}> = [];
+
+    private optionMap: Map<string, any>;
 
     constructor(@Inject(NzModalService) private modal: NzModalService,
                 @Inject(NzMessageService) private msg: NzMessageService,
@@ -44,12 +47,18 @@ export class ReferenceComponent implements OnInit {
     ngOnInit(): void {
     }
 
+    @Output() onSelectedOption = new EventEmitter<any>();
+
     onSelectionChange(event: any){
         this.field.eruptFieldJson.edit.$viewValue = event.nzLabel;
         this.field.eruptFieldJson.edit.$value = event.nzValue;
+        let element = this.optionMap.get(event.nzValue+'');
+        if(element){
+            this.onSelectedOption.emit({field: this.field, option:element})
+        }
     }
 
-    onBlurChange(event: any){
+    onBlurChange(event: FocusEvent){
         // 输入框失去焦点后, 没有选择建议值,重置输入内容
         if(!this.field.eruptFieldJson.edit.$value){
             this.field.eruptFieldJson.edit.$viewValue = ''
@@ -61,15 +70,31 @@ export class ReferenceComponent implements OnInit {
         let body = {
             condition: conditions
         };
-        let label = this.field.eruptFieldJson.edit.referenceTableType.label;
+        let label = null
+        if(this.field.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE){
+            label = this.field.eruptFieldJson.edit.referenceTableType.label;
+        }else if (this.field.eruptFieldJson.edit.type == EditType.REFERENCE_TREE){
+            label = this.field.eruptFieldJson.edit.referenceTreeType.label;
+        }
+        if(label == null){
+            return
+        }
         conditions.push({key: label, value: e})
         this.dataService.queryEruptTableData(this.field.fieldClassName,
             {pageIndex: 1, pageSize: 10}, body).subscribe(data => {
             this.autoCompleteOptions = []
+            this.optionMap = data.list.reduce((map, cur) => {
+                map.set(cur["id"] + '', cur)
+                return map
+            }, new Map<string, any>())
             data.list.forEach(i => {
                 this.autoCompleteOptions.push({value: i[label], id:i["id"]})
             })
         })
+    }
+
+    onInputFocus($event: FocusEvent) {
+        this.onChange("")
     }
 
     createReferenceModal(field: EruptFieldModel) {

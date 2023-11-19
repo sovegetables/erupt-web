@@ -3,31 +3,87 @@
         <div class="tab-bar">
             <button (click)="mode=='add'?addData():addDataByRefer()" nz-button nzGhost nzType="primary"
                     [nzSize]="'small'">
-<!--                <i nz-icon nzType="plus" theme="outline"></i>-->
                 {{'global.new'|translate}}
             </button>
             <button (click)="deleteData()" nz-button *ngIf="checkedRow.length>0"
                     nzType="default" nzDanger [nzSize]="'small'">
-<!--                <i nz-icon nzType="delete" theme="outline"></i>-->
                 {{'global.delete'|translate}}
             </button>
         </div>
     </ng-container>
     <nz-spin [nzSpinning]="loading">
-        <st #st resizable (change)="stChange($event)" *ngIf="!loading"
+        <st #st resizable
+            (change)="stChange($event)"
+            *ngIf="!loading"
             [scroll]="{x: (clientWidth > 768 ? ((tabErupt.eruptBuildModel.eruptModel.tableColumns.length * 130) + 'px') : '460px')}"
-            [size]="'small'" [columns]="column" [ps]="20"
-            [data]="tabErupt.eruptFieldModel.eruptFieldJson.edit.$value"
-            [bordered]="true" [page]="stConfig.stPage"
+            [size]="'small'"
+            [columns]="column"
+            [ps]="20"
+            [data]="data"
+            [bordered]="true"
+            [page]="stConfig.stPage"
         >
-            <!--TODO-->
-<!--            <ng-template st-row="lineInputRow" let-item let-index="index">-->
-<!--                <erupt-reference [eruptModel]="tabErupt.eruptBuildModel.eruptModel"-->
-<!--                                 [field]="tabErupt.eruptBuildModel.eruptModel.tableColumns[index].eruptFieldModel"-->
-<!--                                 [readonly]="false"-->
-<!--                                 size="small">-->
-<!--                </erupt-reference>-->
-<!--            </ng-template>-->
+            <ng-template st-row="lineInputRow" let-item let-index="index" let-column="column">
+                    <ng-container [ngSwitch]="item[column['indexKey']].type">
+                        <ng-container *ngSwitchCase="editType.SERIAL_NUMBER">
+                            <ng-container>{{item[column['indexKey']].value}}</ng-container>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="editType.NUMBER">
+                            <nz-input-number class="erupt-input"
+                                             [nzSize]="'small'"
+                                             [nzDisabled]="isReadonly(item[column['indexKey']].eruptFieldModel)"
+                                             [(ngModel)]="item[column['indexKey']].value"
+                                             [nzPlaceHolder]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.placeHolder"
+                                             [name]="item[column['indexKey']].eruptFieldModel.fieldName"
+                                             [nzMin]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.min"
+                                             [nzMax]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.max"
+                                             [nzStep]="1">
+                            </nz-input-number>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="editType.INPUT">
+                            <nz-input-group class="erupt-input" [nzSize]="'small'">
+                                <input nz-input [nzSize]="'small'" autocomplete="off"
+                                       nz-tooltip
+                                       nzTooltipTrigger="focus"
+                                       nzTooltipPlacement="topLeft"
+                                       [nzTooltipTitle]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.$value"
+                                       [type]="item[column['indexKey']].inputType.type"
+                                       [maxLength]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.inputType.length"
+                                       [(ngModel)]="item[column['indexKey']].value"
+                                       [name]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.fieldName"
+                                       [placeholder]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.placeHolder"
+                                       [required]="item[column['indexKey']].eruptFieldModel.eruptFieldJson"
+                                       [disabled]="isReadonly(item[column['indexKey']].eruptFieldModel)">
+                            </nz-input-group>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="editType.REFERENCE_TABLE">
+                            <erupt-reference
+                                 *ngIf="!isReadonly(item[column['indexKey']].eruptFieldModel)"
+                                 [eruptModel]="tabErupt.eruptBuildModel.eruptModel"
+                                 [field]="item[column['indexKey']].eruptFieldModel"
+                                 [enableAfterBtn] = "false"
+                                 (onSelectedOption)="onSelectedOption($event)"
+                                 size="small">
+                            </erupt-reference>
+                            <ng-container *ngIf="isReadonly(item[column['indexKey']].eruptFieldModel)">
+                                <input nz-input
+                                       [nzSize]="'small'"
+                                       [(ngModel)]="item[column['indexKey']].eruptFieldModel.value"
+                                       [disabled]="true"
+                                />
+                            </ng-container>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="editType.DATE">
+                            <erupt-date [field]="item[column['indexKey']].eruptFieldModel"
+                                        [size]="'small'"
+                                        [readonly]="isReadonly(item[column['indexKey']].eruptFieldModel)">
+                            </erupt-date>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="editType.BOOLEAN">
+
+                        </ng-container>
+                    </ng-container>
+            </ng-template>
         </st>
     </nz-spin>
 </div>

@@ -10,7 +10,8 @@
                     <ng-container [ngSwitch]="eruptFieldModelMap.get(item.key).eruptFieldJson.edit.type">
                         <ng-container *ngSwitchCase="editType.TAB_TABLE_ADD">
                             <tab-table [onlyRead]="isReadonly(eruptFieldModelMap.get(item.key))"
-                                       [tabErupt]="{eruptBuildModel:item.value,eruptFieldModel:eruptFieldModelMap.get(item.key)}"
+                                       [tabErupt]="{eruptBuildModel:item.value, eruptFieldModel:eruptFieldModelMap.get(item.key)}"
+                                       [tabEruptTableData]="eruptFieldModelMap.get(item.key).eruptFieldJson.edit.$value"
                                        [eruptBuildModel]="eruptBuildModel"
                             ></tab-table>
                         </ng-container>

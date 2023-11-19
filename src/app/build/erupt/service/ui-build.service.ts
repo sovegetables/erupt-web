@@ -40,17 +40,22 @@ export class UiBuildService {
      * @param dataConvert 是否需要数据转换,如bool转换，choice转换
      * @param dataHandler
      * @param refreshing
+     * @param lineEdit 是否是行编辑
      */
     viewToAlainTableConfig(eruptBuildModel: EruptBuildModel, lineData: boolean, dataConvert?: boolean,
-                           dataHandler?: DataHandlerService, refreshing?: TableRefreshing): STColumn[] {
+                           dataHandler?: DataHandlerService, refreshing?: TableRefreshing,
+                           lineEdit: boolean = false): STColumn[] {
         let cols: STColumn[] = [];
         const views = eruptBuildModel.eruptModel.tableColumns;
         let layout = eruptBuildModel.eruptModel.eruptJson.layout;
         let i = 0;
         for (let view of views) {
-            let titleWidth = view.title.length * 14 + 22;
+            let titleWidth = view.title.length * 16 + 30;
             if (titleWidth > 280) {
                 titleWidth = 280;
+            }
+            if (titleWidth < 100) {
+                titleWidth = 100;
             }
             if (view.sortable) {
                 titleWidth += 20;
@@ -72,8 +77,13 @@ export class UiBuildService {
                 obj.index = view.column.replace(/\./g, "_");
             } else {
                 obj.index = view.column;
-                //行编辑 todo
-                // obj["render"] = 'lineInputRow'
+            }
+            if(lineEdit){
+                //行编辑
+                obj["render"] = 'lineInputRow'
+            }
+            if(!view.show){
+                continue
             }
             if (view.sortable) {
                 obj.sort = {
@@ -122,6 +132,10 @@ export class UiBuildService {
             obj.width = titleWidth;
             //展示类型
             switch (view.viewType) {
+                case ViewType.SERIAL_NUMBER:
+                    obj.className = "text-col";
+                    obj.width = 60;
+                    break;
                 case ViewType.TEXT:
                     obj.className = "text-col";
                     obj.width = titleWidth + 20;
@@ -136,7 +150,12 @@ export class UiBuildService {
                     obj.format = (item: any) => {
                         if (item[view.column]) {
                             if (view.eruptFieldModel.eruptFieldJson.edit.dateType.type == DateEnum.DATE) {
-                                return item[view.column].substr(0, 10);
+                                if(lineEdit){
+                                    let value = item[view.column].value;
+                                    return value?value.substr(0, 10):null;
+                                }else {
+                                    return item[view.column].substr(0, 10);
+                                }
                             } else {
                                 return item[view.column];
                             }

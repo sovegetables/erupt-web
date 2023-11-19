@@ -1,6 +1,7 @@
 import {EruptFieldModel, Tpl, View} from "./erupt-field.model";
-import {FormSize, OperationIfExprBehavior, OperationMode, OperationType} from "./erupt.enum";
+import {EditType, FormSize, OperationIfExprBehavior, OperationMode, OperationType} from "./erupt.enum";
 import {EruptBuildModel} from "./erupt-build.model";
+import {TabTableComponent} from "../components/tab-table/tab-table.component";
 
 
 export interface EruptModel {
@@ -12,6 +13,14 @@ export interface EruptModel {
     eruptFieldModelMap?: Map<String, EruptFieldModel>;
     tableColumns?: View[];
     searchCondition: any;
+}
+
+export interface TabTableItem{
+    type: EditType
+    value: any
+    eruptFieldModel: EruptFieldModel
+    view: View
+    key: string
 }
 
 export interface Erupt {

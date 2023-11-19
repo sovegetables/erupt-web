@@ -17,7 +17,8 @@ export class RestPath {
 
 export enum EditType {
     INPUT = "INPUT",                           //输入框
-    NUMBER = "NUMBER",
+    NUMBER = "NUMBER",                         //数字
+    SERIAL_NUMBER = "SERIAL_NUMBER",           //行号
     TEXTAREA = "TEXTAREA",                     //大文本域
     CHOICE = "CHOICE",                         //选择框
     TAGS = "TAGS",                             //标签选择
@@ -80,6 +81,7 @@ export enum ViewType {
     DATE_TIME = "DATE_TIME",
     BOOLEAN = "BOOLEAN",
     NUMBER = "NUMBER",
+    SERIAL_NUMBER = "SERIAL_NUMBER",
     MARKDOWN = "MARKDOWN",
     HIDDEN = "HIDDEN"
 }

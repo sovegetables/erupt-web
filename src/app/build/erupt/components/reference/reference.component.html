@@ -1,4 +1,6 @@
-<nz-input-group [nzSize]="size" class="erupt-input" [nzAddOnAfter]="readonly?null:refBtn">
+<nz-input-group [nzSize]="size"
+                class="erupt-input"
+                [nzAddOnAfter]="readonly?null:enableAfterBtn?refBtn:null">
     <input nz-input [nzSize]="size"
            [required]="field.eruptFieldJson.edit.notNull"
            [disabled]="readonly"
@@ -7,6 +9,7 @@
            (ngModelChange)="onChange($event)"
            (keydown)="enterEvent($event)"
            (blur)="onBlurChange($event)"
+           (focus)="onInputFocus($event)"
            [nzAutocomplete]="auto"
            [name]="field.fieldName">
 </nz-input-group>
@@ -19,8 +22,8 @@
         <span style="cursor: pointer" nz-icon (click)="createReferenceModal(field)" nzType="search" nzTheme="outline"></span>
     </ng-container>
 </ng-template>
-<nz-autocomplete (selectionChange)="onSelectionChange($event)" #auto>
-    <nz-auto-option class="global-search-item" *ngFor="let option of autoCompleteOptions" [nzValue]="option.id" [nzLabel]="option.value">
+<nz-autocomplete [nzWidth]="210" (selectionChange)="onSelectionChange($event)" #auto>
+    <nz-auto-option *ngFor="let option of autoCompleteOptions" [nzValue]="option.id" [nzLabel]="option.value">
         {{ option.value }}
     </nz-auto-option>
 </nz-autocomplete>
