@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
 import {EruptModel} from "../../model/erupt.model";
-import {ChoiceEnum, DateEnum, EditType} from "../../model/erupt.enum";
+import {ChoiceEnum, DateEnum, EditType, RestPath} from "../../model/erupt.enum";
 import {colRules} from "@shared/model/util.model";
 import {DataHandlerService} from "../../service/data-handler.service";
 import {ChoiceComponent} from "../choice/choice.component";
@@ -20,7 +20,7 @@ export class SearchComponent implements OnInit {
     @Output() search = new EventEmitter();
 
     @Input() size: "large" | "small" | "default" = "large";
-    
+
     @ViewChildren('choice') choices: QueryList<ChoiceComponent>;
 
     editType = EditType;
@@ -68,8 +68,8 @@ export class SearchComponent implements OnInit {
         };
         let label = field.fieldName;
         conditions.push({key: label, value: e})
-        this.dataService.queryEruptTableData(field.modelName,
-            {pageIndex: 1, pageSize: 10}, body).subscribe(data => {
+        this.dataService.queryEruptTableData(field.modelName, RestPath.data + "/table/" + field.modelName,
+            {pageIndex: 1, pageSize: 10}, null, body).subscribe(data => {
             this.autoCompleteOptions = []
             data.list.forEach(i => {
                 this.autoCompleteOptions.push({value: i[label], id:i["id"]})

@@ -287,7 +287,7 @@ export class TableComponent implements OnInit {
             pageSize: this.dataPage.ps,
             sort: sortString,
             ...query
-        }, this.header).subscribe(page => {
+        }, this.header, null).subscribe(page => {
             this.st.data = page.list;
             // this.dataPage.ps = page.pageSize;
             // this.dataPage.pi = page.pageIndex;
@@ -320,7 +320,7 @@ export class TableComponent implements OnInit {
         let viewCols = this.uiBuildService.viewToAlainTableConfig(this.eruptBuildModel, true,
             null, this.dataHandler, new class implements TableRefreshing {
                 refresh(): any {
-                    that.stLoad()
+                    that.query()
                 }
             });
         for (let viewCol of viewCols) {

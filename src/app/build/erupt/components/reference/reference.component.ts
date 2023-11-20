@@ -2,7 +2,7 @@ import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/c
 import {EruptFieldModel} from "../../model/erupt-field.model";
 import {NzSizeLDSType} from "ng-zorro-antd/core/types";
 import {TreeSelectComponent} from "../tree-select/tree-select.component";
-import {EditType, SelectMode} from "../../model/erupt.enum";
+import {EditType, RestPath, SelectMode} from "../../model/erupt.enum";
 import {NzModalService} from "ng-zorro-antd/modal";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {EruptModel} from "../../model/erupt.model";
@@ -80,8 +80,8 @@ export class ReferenceComponent implements OnInit {
             return
         }
         conditions.push({key: label, value: e})
-        this.dataService.queryEruptTableData(this.field.fieldClassName,
-            {pageIndex: 1, pageSize: 10}, body).subscribe(data => {
+        this.dataService.queryEruptTableData(this.field.fieldClassName, RestPath.data + "/table/" + this.field.fieldClassName,
+            {pageIndex: 1, pageSize: 10}, null, body).subscribe(data => {
             this.autoCompleteOptions = []
             this.optionMap = data.list.reduce((map, cur) => {
                 map.set(cur["id"] + '', cur)
