@@ -20,7 +20,6 @@ import {I18NService} from "../i18n/i18n.service";
 export class StartupService {
     constructor(iconSrv: NzIconService,
                 private reuseTabService: ReuseTabService,
-                private settingService: SettingsService,
                 private titleService: TitleService,
                 private settingSrv: SettingsService,
                 private httpClient: HttpClient,
@@ -30,7 +29,7 @@ export class StartupService {
     }
 
     async load(): Promise<any> {
-        console.group(WindowModel.copyright ? "Erupt All rights reserved." : WindowModel.title);
+        console.group(WindowModel.title);
         console.log("%c" +
             "                               __      \n" +
             "                              /\\ \\__   \n" +
@@ -40,8 +39,8 @@ export class StartupService {
             "\\ \\____\\\\ \\_\\  \\ \\____/ \\ \\ ,__/ \\ \\__\\\n" +
             " \\/____/ \\/_/   \\/___/   \\ \\ \\/   \\/__/\n" +
             "                          \\ \\_\\        \n" +
-            "                           \\/_/        ", "color:#2196f3;font-weight:800");
-        console.log("%chttps://www.erupt.xyz", "color:#2196f3;font-size:1.3em;padding:16px 0;");
+            "                           \\/_/          \n" +
+            "https://www.erupt.xyz", "color:#2196f3;font-weight:800");
         console.groupEnd();
         (window as any).eruptWebSuccess = true;
         await new Promise<void>((resolve) => {
@@ -82,13 +81,26 @@ export class StartupService {
         }
         return new Promise((resolve) => {
             // 应用信息：包括站点名、描述、年份
-            this.settingService.setApp({
+            this.settingSrv.setApp({
                 name: WindowModel.title,
                 description: WindowModel.desc
             });
             // 设置页面标题的后缀
             this.titleService.suffix = WindowModel.title;
             this.titleService.default = "";
+            {
+                let locales = EruptAppData.get().locales;
+                let localesObj = {};
+                for (let key of locales) {
+                    localesObj[key] = key;
+                }
+                let defaultLang = this.i18n.getDefaultLang();
+                if (!localesObj[defaultLang]) {
+                    defaultLang = locales[0]
+                }
+                this.settingSrv.setLayout('lang', defaultLang);
+                this.i18n.use(defaultLang)
+            }
             this.i18n.loadLangData(() => {
                 resolve(null);
             })

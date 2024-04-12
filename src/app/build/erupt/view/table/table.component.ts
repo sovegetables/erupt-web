@@ -5,7 +5,6 @@ import {Drill, DrillInput, EruptModel, Row, RowOperation} from "../../model/erup
 import {SettingsService} from "@delon/theme";
 import {EditTypeComponent} from "../../components/edit-type/edit-type.component";
 import {EditComponent} from "../edit/edit.component";
-import {ActivatedRoute} from "@angular/router";
 import {EruptBuildModel} from "../../model/erupt-build.model";
 import {
     FormSize,
@@ -51,11 +50,10 @@ export class TableComponent implements OnInit {
         private msg: NzMessageService,
         @Inject(NzModalService)
         private modal: NzModalService,
-        public route: ActivatedRoute,
         private appViewService: AppViewService,
         private dataHandler: DataHandlerService,
         private uiBuildService: UiBuildService,
-        private i18n: I18NService,
+        private i18n: I18NService
     ) {
     }
 
@@ -261,6 +259,9 @@ export class TableComponent implements OnInit {
     }
 
     query(page?: number, size?: number, sort?: object) {
+        if (!this.eruptBuildModel.power.query) {
+            return;
+        }
         let query = {};
         query["condition"] = this.dataHandler.eruptObjectToCondition(
             this.dataHandler.searchEruptToObject({
@@ -289,12 +290,12 @@ export class TableComponent implements OnInit {
             sort: sortString,
             ...query
         }, this.header).subscribe(page => {
-            this.st.data = page.list;
-            // this.dataPage.ps = page.pageSize;
-            // this.dataPage.pi = page.pageIndex;
             this.dataPage.querying = false;
-            this.dataPage.data = page.list;
+            this.dataPage.data = page.list
             this.dataPage.total = page.total;
+            // for (let ele of spliceArr(page.list, 20)) {
+            //     this.dataPage.data.push(...ele)
+            // }
         })
         this.extraRowFun(query);
     }
@@ -334,7 +335,7 @@ export class TableComponent implements OnInit {
             tableOperators.push({
                 icon: "eye",
                 click: (record: any, modal: any) => {
-                    this.modal.create({
+                    let ref = this.modal.create({
                         nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
                         nzWidth: fullLine ? 550 : null,
                         nzStyle: {top: "60px"},
@@ -343,14 +344,12 @@ export class TableComponent implements OnInit {
                         nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",
                         nzOkText: null,
                         nzTitle: this.i18n.fanyi("global.view"),
-                        nzContent: EditComponent,
-                        nzComponentParams: {
-                            readonly: true,
-                            eruptBuildModel: this.eruptBuildModel,
-                            id: record[this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
-                            behavior: Scene.EDIT,
-                        }
+                        nzContent: EditComponent
                     });
+                    ref.getContentComponent().readonly = true;
+                    ref.getContentComponent().eruptBuildModel = this.eruptBuildModel;
+                    ref.getContentComponent().behavior = Scene.EDIT;
+                    ref.getContentComponent().id = record[this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol];
                 }
             });
         }
@@ -407,8 +406,8 @@ export class TableComponent implements OnInit {
         //drill
         const eruptJson = this.eruptBuildModel.eruptModel.eruptJson;
 
-        let createDrillModel = (drill: Drill, id) => {
-            this.modal.create({
+        let createDrillModel = (drill: Drill, id: any) => {
+            let ref = this.modal.create({
                 nzWrapClassName: "modal-xxl",
                 nzStyle: {top: "30px"},
                 nzBodyStyle: {padding: "18px"},
@@ -416,16 +415,14 @@ export class TableComponent implements OnInit {
                 nzKeyboard: false,
                 nzTitle: drill.title,
                 nzFooter: null,
-                nzContent: TableComponent,
-                nzComponentParams: {
-                    drill: {
-                        code: drill.code,
-                        val: id,
-                        erupt: drill.link.linkErupt,
-                        eruptParent: this.eruptBuildModel.eruptModel.eruptName
-                    }
-                }
+                nzContent: TableComponent
             });
+            ref.getContentComponent().drill = {
+                code: drill.code,
+                val: id,
+                erupt: drill.link.linkErupt,
+                eruptParent: this.eruptBuildModel.eruptModel.eruptName
+            }
         }
 
         for (let i in eruptJson.drills) {
@@ -435,14 +432,14 @@ export class TableComponent implements OnInit {
                 tooltip: drill.title,
                 text: `<i class="${drill.icon}"></i>`,
                 click: (record) => {
-                    createDrillModel(drill, record[this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol]);
+                    createDrillModel(drill, record[eruptJson.primaryKeyCol]);
                 }
             });
             editButtons.push({
                 label: drill.title,
                 type: 'dashed',
                 onClick(options: ModalButtonOptions<any>) {
-                    createDrillModel(drill, options['id']);
+                    createDrillModel(drill, options[eruptJson.primaryKeyCol]);
                 }
             })
         }
@@ -473,11 +470,6 @@ export class TableComponent implements OnInit {
                         nzTitle: this.i18n.fanyi("global.editor"),
                         nzOkText: this.i18n.fanyi("global.update"),
                         nzContent: EditComponent,
-                        nzComponentParams: {
-                            eruptBuildModel: this.eruptBuildModel,
-                            id: record[this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
-                            behavior: Scene.EDIT,
-                        },
                         nzFooter: [
                             {
                                 label: this.i18n.fanyi("global.cancel"),
@@ -511,6 +503,9 @@ export class TableComponent implements OnInit {
                             }
                         }
                     });
+                    model.getContentComponent().eruptBuildModel = this.eruptBuildModel;
+                    model.getContentComponent().id = record[this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol];
+                    model.getContentComponent().behavior = Scene.EDIT;
                 }
             });
         }
@@ -544,7 +539,7 @@ export class TableComponent implements OnInit {
             _columns.push({
                 title: this.i18n.fanyi("table.operation"),
                 fixed: "right",
-                width: tableOperators.length * 32 + 18,
+                width: tableOperators.length * 35 + 18,
                 className: "text-center",
                 buttons: tableOperators,
                 resizable: false
@@ -577,7 +572,7 @@ export class TableComponent implements OnInit {
         }
         if (ro.type === OperationType.TPL) {
             let url = this.dataService.getEruptOperationTpl(this.eruptBuildModel.eruptModel.eruptName, ro.code, ids);
-            this.modal.create({
+            let ref = this.modal.create({
                 nzKeyboard: true,
                 nzTitle: ro.title,
                 nzMaskClosable: false,
@@ -590,10 +585,11 @@ export class TableComponent implements OnInit {
                 },
                 nzFooter: null,
                 nzContent: EruptIframeComponent,
-                nzComponentParams: {
-                    url: url
+                nzOnCancel: () => {
+                    // this.query();
                 }
             });
+            ref.getContentComponent().url = url;
         } else if (ro.type === OperationType.ERUPT) {
             let operationErupt: EruptModel = null;
             if (this.eruptBuildModel.operationErupts) {
@@ -617,7 +613,7 @@ export class TableComponent implements OnInit {
                         modal.componentInstance.nzCancelDisabled = false;
                         this.selectedRows = [];
                         if (res.status === Status.SUCCESS) {
-                            this.query(1);
+                            this.query();
                             if (res.data) {
                                 try {
                                     let msg = this.msg;
@@ -631,16 +627,12 @@ export class TableComponent implements OnInit {
                             return false;
                         }
                     },
-                    nzContent: EditTypeComponent,
-                    nzComponentParams: {
-                        mode: Scene.ADD,
-                        eruptBuildModel: {
-                            eruptModel: operationErupt
-                        },
-                        parentEruptName: this.eruptBuildModel.eruptModel.eruptName
-                    }
+                    nzContent: EditTypeComponent
                 });
-                this.dataService.getInitValue(operationErupt.eruptName, this.eruptBuildModel.eruptModel.eruptName).subscribe(data => {
+                modal.getContentComponent().mode = Scene.ADD;
+                modal.getContentComponent().eruptBuildModel = {eruptModel: operationErupt};
+                modal.getContentComponent().parentEruptName = this.eruptBuildModel.eruptModel.eruptName;
+                this.dataService.getInitValue(operationErupt.eruptName, this.eruptBuildModel.eruptModel.eruptName, this._drill ? DataService.drillToHeader(this._drill) : {}).subscribe(data => {
                     this.dataHandlerService.objectToEruptValue(data, {
                         eruptModel: operationErupt
                     });
@@ -654,7 +646,7 @@ export class TableComponent implements OnInit {
                         this.selectedRows = [];
                         let res = await this.dataService.execOperatorFun(this.eruptBuildModel.eruptModel.eruptName, ro.code, ids, null)
                             .toPromise().then();
-                        this.query(1);
+                        this.query();
                         if (res.data) {
                             try {
                                 let msg = this.msg;
@@ -670,7 +662,7 @@ export class TableComponent implements OnInit {
     }
 
     //新增
-    addRow() {
+    addData() {
         let fullLine = false;
         let layout = this.eruptBuildModel.eruptModel.eruptJson.layout;
         if (layout && layout.formSize == FormSize.FULL_LINE) {
@@ -684,9 +676,6 @@ export class TableComponent implements OnInit {
             nzKeyboard: false,
             nzTitle: this.i18n.fanyi("global.new"),
             nzContent: EditComponent,
-            nzComponentParams: {
-                eruptBuildModel: this.eruptBuildModel
-            },
             nzOkText: this.i18n.fanyi("global.add"),
             nzOnOk: async () => {
                 if (!this.adding) {
@@ -717,6 +706,8 @@ export class TableComponent implements OnInit {
                 return false;
             }
         });
+        modal.getContentComponent().eruptBuildModel = this.eruptBuildModel
+        modal.getContentComponent().header = this._drill ? DataService.drillToHeader(this._drill) : {};
     }
 
     pageIndexChange(index) {
@@ -826,7 +817,6 @@ export class TableComponent implements OnInit {
         this.showTable = true;
         this.eruptBuildModel.eruptModel.eruptJson.linkTree.value = event;
         this.searchErupt.eruptJson.linkTree.value = event;
-        console.log(this.dataPage)
         this.query(1);
     }
 
@@ -847,16 +837,14 @@ export class TableComponent implements OnInit {
             nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",
             nzWrapClassName: "modal-lg",
             nzContent: ExcelImportComponent,
-            nzComponentParams: {
-                eruptModel: this.eruptBuildModel.eruptModel,
-                drillInput: this._drill
-            },
             nzOnCancel: () => {
                 if (model.getContentComponent().upload) {
                     this.query();
                 }
             }
         });
+        model.getContentComponent().eruptModel = this.eruptBuildModel.eruptModel;
+        model.getContentComponent().drillInput = this._drill;
     }
 
 }
