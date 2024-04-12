@@ -2,13 +2,13 @@ var start = true;
 window.eruptSiteConfig = {
     domain: "",
     fileDomain: "",
-    title: "全塑智联MES",
+    title: "数据同步系统",
     desc: "",
     dialogLogin: false,
-    copyright: true, //是否保留显示版权信息
+    copyright: false, //是否保留显示版权信息
     logoPath: '/assets/logo.png',
     loginLogoPath: '/assets/logo.png',
-    logoText: "MES",
+    logoText: "数据同步",
     registerPage: null,
     amapKey: '',
     amapSecurityJsCode: "",
