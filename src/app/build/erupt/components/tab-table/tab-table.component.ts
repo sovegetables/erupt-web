@@ -4,12 +4,14 @@ import {DataService} from "@shared/service/data.service";
 import {DataHandlerService} from "../../service/data-handler.service";
 import {EruptFieldModel} from "../../model/erupt-field.model";
 import {BuildConfig} from "../../model/build-config";
-import {EditType, Scene} from "../../model/erupt.enum";
+import {EditType, Scene, SelectMode} from "../../model/erupt.enum";
 import {UiBuildService} from "../../service/ui-build.service";
 import {I18NService} from "@core";
 import {STChange, STColumn, STComponent} from "@delon/abc/st";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
+import { deepCopy } from "@delon/util";
+import { ReferenceTableComponent } from "../reference-table/reference-table.component";
 
 @Component({
     selector: "tab-table",
@@ -46,8 +48,6 @@ export class TabTableComponent implements OnInit {
 
     data = [];
 
-    tabInitData = []
-
     constructor(private dataService: DataService,
                 private uiBuildService: UiBuildService,
                 private dataHandlerService: DataHandlerService,
@@ -57,8 +57,10 @@ export class TabTableComponent implements OnInit {
     }
 
     @Input() set tabEruptTableData(data: any) {
+        console.log("-eruptBuildModel-", this.eruptBuildModel)
+        console.log("-eruptBuildModel tabErupt eruptBuildModel -", this.tabErupt.eruptBuildModel)
+        console.log("-eruptBuildModel tabErupt eruptFieldModel -", this.tabErupt.eruptFieldModel)
         let values = data
-        this.tabInitData = data
         console.log("-tabEruptTableData-values-", values)
         let items = []
         for (let i = 0; i < values.length; i++) {
@@ -67,21 +69,43 @@ export class TabTableComponent implements OnInit {
         }
         this.data = items
         console.log("-tabEruptTableData-items-", items)
+        if(this.eruptBuildModel){
+            let map = this.eruptBuildModel.eruptModel.eruptFieldModelMap
+            console.log("-tabEruptTableData-map-", map)
+            let fieldName = this.tabErupt.eruptFieldModel.fieldName
+            console.log("-tabEruptTableData-fieldName-", fieldName)
+            let fieldModel =  map.get(fieldName) as EruptFieldModel
+            console.log("-tabEruptTableData-fieldModel-", fieldModel)
+            if(fieldModel){
+                console.log('$value:', fieldModel.eruptFieldJson.edit.$value)
+                fieldModel.eruptFieldJson.edit.$tempValue = this.data
+            }
+        }
     }
 
-    private convertToLineItem(value: any, items: any[]) {
+    private convertToLineItem(value: any, items: any[], indexNo: number = -1) {
         const child = {}
-        for (let j = 0; j < this.tabErupt.eruptBuildModel.eruptModel.tableColumns.length; j++) {
-            let no = items.length + 1;
-            const tableColumn = this.tabErupt.eruptBuildModel.eruptModel.tableColumns[j];
+        const tableColumns = this.tabErupt.eruptBuildModel.eruptModel.tableColumns;
+        console.log('tableColumns', tableColumns)
+        for (let j = 0; j < tableColumns.length; j++) {
+            var no: number;
+            if(indexNo == -1){
+                no = items.length + 1;
+            }else{
+                no = indexNo
+            }
+            const tableColumn = tableColumns[j];
             const key = tableColumn.column;
             const view = tableColumn;
             let v = value[key];
-            let eruptFieldModel = view.eruptFieldModel;
+            let eruptFieldModel = deepCopy(view.eruptFieldModel);
+            // let eruptFieldModel = view.eruptFieldModel;
             let eruptFieldJson = eruptFieldModel.eruptFieldJson;
             let type = eruptFieldJson.edit.type;
             if (type == EditType.DATE) {
                 v = v ? v.substr(0, 10) : null;
+                eruptFieldJson.edit.$value = v
+                eruptFieldJson.edit.$viewValue = v
             } else if (type == EditType.REFERENCE_TABLE) {
                 const label = eruptFieldJson.edit.referenceTableType.label;
                 const fieldName = eruptFieldModel.fieldName;
@@ -90,15 +114,22 @@ export class TabTableComponent implements OnInit {
                     eruptFieldJson.edit.readOnly.edit = true
                     eruptFieldJson.edit.readOnly.add = true
                 }
+                if(value[fieldName]){
+                    eruptFieldJson.edit.$value = value[fieldName][eruptFieldModel.primaryKeyCol]
+                }
+                eruptFieldJson.edit.$viewValue = v? v : value[real_key]
             } else if(type == EditType.SERIAL_NUMBER){
                 v = no
+                eruptFieldJson.edit.$value = v
+                eruptFieldJson.edit.$viewValue = v
+            } else{
+                eruptFieldJson.edit.$value = v ? v : null
+                eruptFieldJson.edit.$viewValue = v
             }
-            let itemValue = v ? v : null;
-            eruptFieldJson.edit.$value = itemValue
             eruptFieldModel.serialNumber = no
             child[key] = {
                 type: type,
-                value: itemValue,
+                value: eruptFieldJson.edit.$value,
                 eruptFieldModel: eruptFieldModel,
                 view: view,
                 key: key
@@ -107,41 +138,70 @@ export class TabTableComponent implements OnInit {
         items.push(child)
     }
 
+    onInputChange(index: number, field: EruptFieldModel, event: Event){
+        console.log('index:', index)
+        console.log('field:', field)
+        console.log('event:', event)
+        let value = (event.target as HTMLInputElement).value
+        let dataItem = this.data[index];
+        console.log('dataItem:', dataItem)
+        dataItem[field.fieldName].value = value
+        dataItem[field.fieldName].eruptFieldModel.eruptFieldJson.edit.$viewValue = value
+        console.log('onSelectedOption final data:', this.data)
+    }
+
     onSelectedOption(item: any){
         console.log('onSelectedOption:', item)
         if(item.field.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE){
             let option = item.option;
             item.field.value = option.id
             let tableColumns = this.tabErupt.eruptBuildModel.eruptModel.tableColumns;
+            console.log('onSelectedOption tableColumns:', tableColumns)
+            console.log('onSelectedOption data:', this.data)
             let columnChanged = false
             let dataIndex = 0
             for (let j = 0; j < tableColumns.length; j++) {
                 const tableColumn = tableColumns[j];
                 const key = tableColumn.column;
-                let subColumnKey = key.substr(key.indexOf('_') + 1, key.length);
                 let eruptFieldModel = tableColumn.eruptFieldModel;
+                let recommendBy = eruptFieldModel.eruptFieldJson.edit.recommendBy
+                let dependModel = recommendBy.dependModel
+                let serialNumber = item.field.serialNumber;
+                const index = serialNumber - 1
+
                 if(eruptFieldModel.fieldName == item.field.fieldName
                     && eruptFieldModel.modelName == item.field.modelName
                     && eruptFieldModel.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE
                 ){
                     columnChanged = true
-                    let serialNumber = item.field.serialNumber;
-                    const index = serialNumber - 1
                     dataIndex = index
-                    let datum = this.data[index][key];
+                    let dataItem = this.data[index][key];
+                    let subColumnKey = key.substr(key.indexOf('_') + 1, key.length);
+                    console.log('subColumnKey:', subColumnKey)
                     let element = option[subColumnKey];
-                    datum.eruptFieldModel.eruptFieldJson.edit.$viewValue = element
-                    if (datum.eruptFieldModel.primaryKeyCol){
-                        datum.eruptFieldModel.eruptFieldJson.edit.$value = option[eruptFieldModel.primaryKeyCol]
+                    dataItem.eruptFieldModel.eruptFieldJson.edit.$viewValue = element
+                    if (dataItem.eruptFieldModel.primaryKeyCol){
+                        dataItem.eruptFieldModel.eruptFieldJson.edit.$value = option[eruptFieldModel.primaryKeyCol]
                     }
-                    datum.eruptFieldModel.value = element
+                    dataItem.eruptFieldModel.value = element
+                    dataItem.value = element
+                    console.log('----------')
+                }else if(dependModel == item.field.fieldName){
+                    columnChanged = true
+                    dataIndex = index
+                    let dataItem = this.data[index][key];
+                    let element = option[recommendBy.dependField];
+                    dataItem.eruptFieldModel.eruptFieldJson.edit.$viewValue = element
+                    dataItem.eruptFieldModel.eruptFieldJson.edit.$value = option[recommendBy.dependModelPKey]
+                    dataItem.eruptFieldModel.value = element
+                    dataItem.value = element
                     console.log('----------')
                 }
             }
             if(columnChanged){
                 this.st.setRow(dataIndex, this.data[dataIndex])
             }
-            console.log('onSelectedOption:',this.data)
+            console.log('onSelectedOption final data:', this.data)
         }
     }
 
@@ -175,77 +235,8 @@ export class TabTableComponent implements OnInit {
                 index: this.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol
             });
             viewValue.push(...this.uiBuildService.viewToAlainTableConfig(this.tabErupt.eruptBuildModel, false, true, null, null, true));
-            // let operators: STColumnButton[] = [];
-            // if (this.mode == "add") {
-            //     operators.push({
-            //         icon: "edit",
-            //         click: (record: any, modal: any, comp: STComponent) => {
-            //             this.dataHandlerService.objectToEruptValue(record, this.tabErupt.eruptBuildModel);
-            //             this.modal.create({
-            //                 nzWrapClassName: "modal-lg",
-            //                 nzStyle: {top: "20px"},
-            //                 nzMaskClosable: false,
-            //                 nzKeyboard: false,
-            //                 nzTitle: this.i18n.fanyi("global.editor"),
-            //                 nzContent: EditTypeComponent,
-            //                 nzComponentParams: {
-            //                     col: colRules[3],
-            //                     eruptBuildModel: this.tabErupt.eruptBuildModel,
-            //                     parentEruptName: this.eruptBuildModel.eruptModel.eruptName
-            //                 },
-            //                 nzOnOk: async () => {
-            //                     let obj = this.dataHandlerService.eruptValueToObject(this.tabErupt.eruptBuildModel);
-            //                     let result = await this.dataService.eruptTabUpdate(this.eruptBuildModel.eruptModel.eruptName, this.tabErupt.eruptFieldModel.fieldName, obj)
-            //                         .toPromise().then(resp => resp);
-            //                     if (result.status == Status.SUCCESS) {
-            //                         obj = result.data;
-            //                         this.objToLine(obj);
-            //                         let $value = this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$value;
-            //                         $value.forEach((val, index) => {
-            //                             let tabPrimaryKeyCol = this.tabErupt.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol;
-            //                             if (record[tabPrimaryKeyCol] == val[tabPrimaryKeyCol]) {
-            //                                 $value[index] = obj;
-            //                             }
-            //                         });
-            //                         this.st.reload();
-            //                         return true;
-            //                     } else {
-            //                         return false;
-            //                     }
-            //                 }
-            //             });
-            //         }
-            //     });
-            // }
-            // operators.push({
-            //     icon: {
-            //         type: "delete",
-            //         theme: "twotone",
-            //         twoToneColor: "#f00"
-            //     },
-            //     type: "del",
-            //     click: (record, modal, comp: STComponent) => {
-            //         let $value = this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$value;
-            //         for (let i in <any[]>$value) {
-            //             let tabPrimaryKeyCol = this.tabErupt.eruptBuildModel.eruptModel.eruptJson.primaryKeyCol;
-            //             if (record[tabPrimaryKeyCol] == $value[i][tabPrimaryKeyCol]) {
-            //                 $value.splice(i, 1);
-            //                 break;
-            //             }
-            //         }
-            //         this.st.reload();
-            //     }
-            // });
-            // viewValue.push({
-            //     title: this.i18n.fanyi("table.operation"),
-            //     fixed: "right",
-            //     width: "80px",
-            //     className: "text-center",
-            //     buttons: operators
-            // });
             this.column = viewValue;
         }
-        // tabErupt.eruptFieldModel.eruptFieldJson.edit.$value
         // let tabEdit = this.tabErupt.eruptFieldModel.eruptFieldJson.edit;
         // if (!tabEdit.$value) {
         //     tabEdit.$value = [];
@@ -256,72 +247,74 @@ export class TabTableComponent implements OnInit {
     }
 
     addData() {
-        const length = this.tabInitData.length;
-        if(length > 0){
-            let value =  this.tabInitData[0]
-            this.convertToLineItem(value, this.data);
-            // this.st.addRow() todo
-            this.st.reload()
-        }
+        let value =  <any>deepCopy(this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$initValue)
+        console.log("addData:", value)
+        let item = []
+        this.convertToLineItem(value, item, this.st._data.length + 1);
+        item.forEach(i => {
+            this.data.push(i)
+        })
+        this.st.addRow(item, {index: this.st._data.length + 1} )
+        // this.st.reload()
     }
 
     addDataByRefer() {
-        // this.modal.create({
-        //     nzStyle: {top: "20px"},
-        //     nzWrapClassName: "modal-xxl",
-        //     nzMaskClosable: false,
-        //     nzKeyboard: false,
-        //     nzTitle: this.i18n.fanyi("global.new"),
-        //     nzContent: ReferenceTableComponent,
-        //     nzComponentParams: {
-        //         eruptBuild: this.eruptBuildModel,
-        //         eruptField: this.tabErupt.eruptFieldModel,
-        //         mode: SelectMode.checkbox,
-        //         tabRef: true
-        //     },
-        //     nzOkText: this.i18n.fanyi("global.add"),
-        //     nzOnOk: () => {
-        //         let tabEruptModel = this.tabErupt.eruptBuildModel.eruptModel;
-        //         let edit = this.tabErupt.eruptFieldModel.eruptFieldJson.edit;
-        //         if (!edit.$tempValue) {
-        //             this.msg.warning(this.i18n.fanyi("global.select.one"));
-        //             return false;
-        //         }
-        //         if (!edit.$value) {
-        //             edit.$value = [];
-        //         }
-        //
-        //         for (let v of edit.$tempValue) {
-        //             for (let key in v) {
-        //                 let eruptFieldModel = tabEruptModel.eruptFieldModelMap.get(key);
-        //                 if (eruptFieldModel) {
-        //                     let ed = eruptFieldModel.eruptFieldJson.edit;
-        //                     switch (ed.type) {
-        //                         case EditType.BOOLEAN:
-        //                             v[key] = v[key] === ed.boolType.trueText;
-        //                             break;
-        //                         case EditType.CHOICE:
-        //                             for (let vl of eruptFieldModel.componentValue) {
-        //                                 if (vl.label == v[key]) {
-        //                                     v[key] = vl.value;
-        //                                     break;
-        //                                 }
-        //                             }
-        //                             break;
-        //                     }
-        //                 }
-        //                 if (key.indexOf("_") != -1) {
-        //                     let kk = key.split("_");
-        //                     v[kk[0]] = v[kk[0]] || {};
-        //                     v[kk[0]][kk[1]] = v[key];
-        //                 }
-        //             }
-        //         }
-        //         edit.$value.push(...edit.$tempValue);
-        //         edit.$value = [...new Set(edit.$value)]; //去重
-        //         return true;
-        //     }
-        // });
+        this.modal.create({
+            nzStyle: {top: "20px"},
+            nzWrapClassName: "modal-xxl",
+            nzMaskClosable: false,
+            nzKeyboard: false,
+            nzTitle: this.i18n.fanyi("global.new"),
+            nzContent: ReferenceTableComponent,
+            nzComponentParams: {
+                eruptBuild: this.eruptBuildModel,
+                eruptField: this.tabErupt.eruptFieldModel,
+                mode: SelectMode.checkbox,
+                tabRef: true
+            },
+            nzOkText: this.i18n.fanyi("global.add"),
+            nzOnOk: () => {
+                let tabEruptModel = this.tabErupt.eruptBuildModel.eruptModel;
+                let edit = this.tabErupt.eruptFieldModel.eruptFieldJson.edit;
+                if (!edit.$tempValue) {
+                    this.msg.warning(this.i18n.fanyi("global.select.one"));
+                    return false;
+                }
+                if (!edit.$value) {
+                    edit.$value = [];
+                }
+
+                for (let v of edit.$tempValue) {
+                    for (let key in v) {
+                        let eruptFieldModel = tabEruptModel.eruptFieldModelMap.get(key);
+                        if (eruptFieldModel) {
+                            let ed = eruptFieldModel.eruptFieldJson.edit;
+                            switch (ed.type) {
+                                case EditType.BOOLEAN:
+                                    v[key] = v[key] === ed.boolType.trueText;
+                                    break;
+                                case EditType.CHOICE:
+                                    for (let vl of eruptFieldModel.componentValue) {
+                                        if (vl.label == v[key]) {
+                                            v[key] = vl.value;
+                                            break;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        if (key.indexOf("_") != -1) {
+                            let kk = key.split("_");
+                            v[kk[0]] = v[kk[0]] || {};
+                            v[kk[0]][kk[1]] = v[key];
+                        }
+                    }
+                }
+                edit.$value.push(...edit.$tempValue);
+                edit.$value = [...new Set(edit.$value)]; //去重
+                return true;
+            }
+        });
     }
 
     objToLine(obj: any) {

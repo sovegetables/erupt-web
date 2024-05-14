@@ -1,15 +1,18 @@
 <nz-skeleton [nzActive]="true" [nzTitle]="true" [nzParagraph]="{ rows: 10 }" *ngIf="!eruptBuildModel"></nz-skeleton>
 <ng-container *ngIf="eruptBuildModel">
     <div nz-row [nzGutter]="12">
+        <!-- 左侧树UI -->
         <div nz-col *ngIf="linkTree" [nzXs]="24" [nzSm]="24" [nzMd]="8" [nzLg]="6" [nzXl]="4">
             <layout-tree [_reference]="_reference" [eruptModel]="eruptBuildModel.eruptModel" (trigger)="clickTreeNode($event)"></layout-tree>
         </div>
+        <!-- 操作按钮 新增、删除、查询、重置 -->
         <div nz-col [nzXs]="24" [nzMd]="linkTree?16:24" [nzLg]="linkTree?18:24" [nzXl]="linkTree?20:24"
              [hidden]="!showTable"
              [ngStyle]="{overflowX: 'hidden', overflowY: linkTree?'auto':'hidden',
              height: linkTree?'calc(100vh - '  + (_reference? '220px' : '103px' ) + ' - '  + (this.settingSrv.layout['reuse'] ? '40px' : '0px') + ' + '+
                 (settingSrv.layout['breadcrumbs']?'0px':'38px')+ ')':'auto'}">
             <ng-container>
+                <!-- 自定义按钮 -->
                 <ng-template #operationButtons>
                     <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.rowOperation">
                         <ng-container *ngFor="let item of eruptBuildModel.eruptModel.eruptJson.rowOperation">
@@ -25,13 +28,14 @@
                 </ng-template>
                 <div class="erupt-btn-item">
                     <div>
+                        <!-- 新增 -->
                         <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.power.add">
                             <button nz-button nzType="default" class="mb-sm" (click)="addRow()" id="erupt-btn-add">
 <!--                                <i nz-icon nzType="plus" nzTheme="outline"></i>-->
                                 {{'table.add'|translate}}
                             </button>
                         </ng-container>
-
+                        <!-- 导出 -->
                         <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.power.export">
                             <button nz-button nzType="default" class="mb-sm" (click)="exportExcel()"
                                     id="erupt-btn-export" [nzLoading]="downloading">
@@ -39,7 +43,7 @@
                                 {{'table.download'|translate}}
                             </button>
                         </ng-container>
-
+                        <!-- 导入 -->
                         <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.power.importable">
                             &nbsp;
                             <nz-button-group>
@@ -61,7 +65,7 @@
                             </nz-dropdown-menu>
                             &nbsp;
                         </ng-container>
-
+                        <!-- 查询 -->
                         <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.power.query">
                             <button nz-button nzType="default" [nzSearch]="true"
                                     class="mb-sm" [nzLoading]="st._loading" id="erupt-btn-query"
@@ -70,13 +74,24 @@
                                 {{'table.query'|translate}}
                             </button>
                         </ng-container>
-
+                        <!-- 编辑 -->
+                        <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.power.edit">
+                            <!-- <button nz-button nzType="default" class="mb-sm" (click)="addRow()" id="erupt-btn-add">
+                                {{'global.editor'|translate}}
+                            </button> -->
+                            <button nz-button nzType="default"
+                                    class="mb-sm" id="erupt-btn-edit"
+                                    (click)="editRow()">
+                                    {{'global.editor'|translate}}
+                            </button>
+                        </ng-container>
+                        <!-- 删除 -->
                         <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.power.delete">
-                            <button nz-button nzType="default" nzDanger *ngIf="selectedRows.length>0"
+                            <button nz-button nzType="default"
                                     class="mb-sm" [nzLoading]="deleting" id="erupt-btn-delete"
                                     (click)="delRows()">
-                                <i nz-icon nzType="delete" nzTheme="outline"></i>
-<!--                                {{'table.delete'|translate}}-->
+                                <!-- <i nz-icon nzType="delete" nzTheme="outline"></i> -->
+                               {{'table.delete'|translate}}
                             </button>
                         </ng-container>
                         <ng-container *ngIf="operationButtonNum <= 3">
@@ -120,11 +135,13 @@
                 </div>
 
                 <ng-container>
+                    <!-- 搜索 -->
                     <nz-card *ngIf="hasSearchFields" [nzBodyStyle]="{padding:'10px'}" class="search-card"
                              [hidden]="hideCondition">
                         <erupt-search [searchEruptModel]="searchErupt" (search)="query()" [size]="'default'">
                         </erupt-search>
                     </nz-card>
+                    <!-- 表格 -->
                     <st #st resizable [loading]="dataPage.querying" [widthMode]="{strictBehavior:'truncate'}"
                         [body]="bodyTpl" [data]="dataPage.data" [columns]="columns"
                         [scroll]="{x: (clientWidth > 768 ? showColumnLength * 150 : 0) + 'px'}"
@@ -142,6 +159,7 @@
                             </ng-container>
                         </ng-template>
                     </st>
+                    <!-- 分页 -->
                     <ng-container *ngIf="dataPage.showPagination">
                         <nz-pagination style="text-align: center;margin-top: 12px" nzShowSizeChanger nzShowQuickJumper
                                        [nzPageIndex]="dataPage.pi" [nzShowTotal]="totalTemplate"

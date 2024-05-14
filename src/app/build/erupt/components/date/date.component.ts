@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Edit, EruptFieldModel} from "../../model/erupt-field.model";
 import {DateEnum, PickerMode} from "../../model/erupt.enum";
 import {DatePipe} from "@angular/common";
@@ -82,5 +82,9 @@ export class DateComponent implements OnInit {
         return null;
     };
 
+    @Output() onSelectedDate = new EventEmitter<any>();
 
+    onInputChange(field: EruptFieldModel, event: Event){
+        this.onSelectedDate.emit(event)
+    }
 }

@@ -8,6 +8,7 @@
                          [nzMode]="rangeMode"
                          [nzPlaceHolder]="edit.placeHolder"
                          [nzDisabledDate]="disabledDate"
+                         (input)="onInputChange(field, $event)"
                          [nzRanges]="dateRanges">
         </nz-range-picker>
     </ng-container>
@@ -28,6 +29,7 @@
                             [nzDisabled]="readonly"
                             [nzPlaceHolder]="edit.placeHolder"
                             [nzDisabledDate]="disabledDate"
+                            (input)="onInputChange(field, $event)"
                             [name]="field.fieldName">
             </nz-date-picker>
         </ng-container>
@@ -38,6 +40,7 @@
                             [nzPlaceHolder]="edit.placeHolder"
                             [nzDisabledDate]="disabledDate"
                             [name]="field.fieldName"
+                            (input)="onInputChange(field, $event)"
                             nzShowTime>
             </nz-date-picker>
         </ng-container>
@@ -46,6 +49,7 @@
                             [(ngModel)]="edit.$value"
                             [nzDisabled]="readonly"
                             [nzPlaceHolder]="edit.placeHolder"
+                            (input)="onInputChange(field, $event)"
                             [name]="field.fieldName">
 
             </nz-time-picker>
@@ -56,6 +60,7 @@
                             [nzDisabled]="readonly"
                             [nzDisabledDate]="disabledDate"
                             [nzPlaceHolder]="edit.placeHolder"
+                            (input)="onInputChange(field, $event)"
                             [name]="field.fieldName">
 
             </nz-week-picker>
@@ -66,6 +71,7 @@
                              [nzDisabled]="readonly"
                              [nzPlaceHolder]="edit.placeHolder"
                              [nzDisabledDate]="disabledDate"
+                             (input)="onInputChange(field, $event)"
                              [name]="field.fieldName">
 
             </nz-month-picker>
@@ -76,6 +82,7 @@
                             [nzDisabled]="readonly"
                             [nzDisabledDate]="disabledDate"
                             [nzPlaceHolder]="edit.placeHolder"
+                            (input)="onInputChange(field, $event)"
                             [name]="field.fieldName">
             </nz-year-picker>
         </ng-container>

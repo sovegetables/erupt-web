@@ -2,13 +2,13 @@ var start = true;
 window.eruptSiteConfig = {
     domain: "",
     fileDomain: "",
-    title: "数据同步系统",
+    title: "常捷MES",
     desc: "",
     dialogLogin: false,
-    copyright: false, //是否保留显示版权信息
-    logoPath: '/assets/logo.png',
-    loginLogoPath: '/assets/logo.png',
-    logoText: "数据同步",
+    copyright: false,
+    logoPath: '',
+    loginLogoPath: '',
+    logoText: "常捷MES",
     registerPage: null,
     amapKey: '',
     amapSecurityJsCode: "",

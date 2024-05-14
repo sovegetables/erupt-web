@@ -49,7 +49,7 @@
                                                          [nzPlaceHolder]="field.eruptFieldJson.edit.placeHolder"
                                                          [nzMin]="field.eruptFieldJson.edit.numberType.min"
                                                          [nzMax]="field.eruptFieldJson.edit.numberType.max"
-                                                         [nzStep]="1"></nz-input-number>
+                                                         [nzStep]="field.eruptFieldJson.edit.numberType.step"></nz-input-number>
                                         <input [nzSize]="size" disabled nz-input placeholder="~"
                                                style="width: 30px; border-left: 0; border-right: 0; pointer-events: none;"
                                         />
@@ -60,7 +60,7 @@
                                                          [nzPlaceHolder]="field.eruptFieldJson.edit.placeHolder"
                                                          [nzMin]="field.eruptFieldJson.edit.numberType.min"
                                                          [nzMax]="field.eruptFieldJson.edit.numberType.max"
-                                                         [nzStep]="1"></nz-input-number>
+                                                         [nzStep]="field.eruptFieldJson.edit.numberType.step"></nz-input-number>
                                     </nz-input-group>
                                 </ng-container>
                                 <ng-container
@@ -72,7 +72,7 @@
                                                      (keydown)="enterEvent($event)"
                                                      [nzMin]="field.eruptFieldJson.edit.numberType.min"
                                                      [nzMax]="field.eruptFieldJson.edit.numberType.max"
-                                                     [nzStep]="1"></nz-input-number>
+                                                     [nzStep]="field.eruptFieldJson.edit.numberType.step"></nz-input-number>
                                 </ng-container>
                             </erupt-search-se>
                         </div>

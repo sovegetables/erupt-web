@@ -58,6 +58,7 @@ export interface Edit {
     show: boolean;
     editShow: boolean;
     showBy: { dependField: string, expr: string };
+    recommendBy: {dependModel:string, dependModelPKey:string, dependField: string, expr: string };
     readOnly: Readonly;
     placeHolder: string;
     searchPlaceHolder: string;
@@ -80,6 +81,8 @@ export interface Edit {
     mapType: MapType;
     $tabTreeViewData?: any;
     $value?: any;
+    $initValue?: any;
+    tabData?: any;
     $viewValue?: any;
     $tempValue?: any;
     $beforeValue?: any;
@@ -128,6 +131,7 @@ interface InputType {
 interface NumberType {
     min: number;
     max: number;
+    step: number;
 }
 
 interface AutoCompleteType {

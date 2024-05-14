@@ -6,7 +6,7 @@
                 {{'global.new'|translate}}
             </button>
             <button (click)="deleteData()" nz-button *ngIf="checkedRow.length>0"
-                    nzType="default" nzDanger [nzSize]="'small'">
+                    nzType="default" [nzSize]="'small'">
                 {{'global.delete'|translate}}
             </button>
         </div>
@@ -37,7 +37,9 @@
                                              [name]="item[column['indexKey']].eruptFieldModel.fieldName"
                                              [nzMin]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.min"
                                              [nzMax]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.max"
-                                             [nzStep]="1">
+                                             [nzStep]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.step"
+                                             (input)="onInputChange(index,item[column['indexKey']].eruptFieldModel, $event)"
+                                             >
                             </nz-input-number>
                         </ng-container>
                         <ng-container *ngSwitchCase="editType.INPUT">
@@ -53,22 +55,25 @@
                                        [name]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.fieldName"
                                        [placeholder]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.placeHolder"
                                        [required]="item[column['indexKey']].eruptFieldModel.eruptFieldJson"
-                                       [disabled]="isReadonly(item[column['indexKey']].eruptFieldModel)">
+                                       [disabled]="isReadonly(item[column['indexKey']].eruptFieldModel)"
+                                       (input)="onInputChange(index,item[column['indexKey']].eruptFieldModel, $event)"
+                                       >
                             </nz-input-group>
                         </ng-container>
                         <ng-container *ngSwitchCase="editType.REFERENCE_TABLE">
                             <erupt-reference
                                  *ngIf="!isReadonly(item[column['indexKey']].eruptFieldModel)"
                                  [eruptModel]="tabErupt.eruptBuildModel.eruptModel"
+                                 [parentEruptName]="eruptBuildModel.eruptModel.eruptName"
                                  [field]="item[column['indexKey']].eruptFieldModel"
-                                 [enableAfterBtn] = "false"
+                                 [enableAfterBtn] = "true"
                                  (onSelectedOption)="onSelectedOption($event)"
                                  size="small">
                             </erupt-reference>
                             <ng-container *ngIf="isReadonly(item[column['indexKey']].eruptFieldModel)">
                                 <input nz-input
                                        [nzSize]="'small'"
-                                       [(ngModel)]="item[column['indexKey']].eruptFieldModel.value"
+                                       [(ngModel)]="item[column['indexKey']].value"
                                        [disabled]="true"
                                 />
                             </ng-container>
@@ -76,6 +81,7 @@
                         <ng-container *ngSwitchCase="editType.DATE">
                             <erupt-date [field]="item[column['indexKey']].eruptFieldModel"
                                         [size]="'small'"
+                                        (onSelectedDate)="onInputChange(index,item[column['indexKey']].eruptFieldModel, $event)"
                                         [readonly]="isReadonly(item[column['indexKey']].eruptFieldModel)">
                             </erupt-date>
                         </ng-container>

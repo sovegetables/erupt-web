@@ -9,12 +9,9 @@ module.exports = {
     /**
      * The following means that all requests are directed to the backend `https://localhost:9000/`
      */
-    '/': {
+    '/erupt-api': {
         target: 'http://localhost:8080',
         secure: false, // Ignore invalid SSL certificates
-        changeOrigin: true,
-        // target: 'https://www.erupt.xyz/demo',
-        // secure: true, // SSL certificates
-        // changeOrigin: true
+        changeOrigin: true
     }
 };

@@ -635,129 +635,137 @@ export class UiBuildService {
                         fullLine = true;
                     }
                     if (eruptBuildModel.eruptModel.eruptJson.power.edit) {
-                        let editButtons: ModalButtonOptions[] = [];
-                        const that = this;
-                        let exprEval = (expr, item) => {
-                            try {
-                                if (expr) {
-                                    return eval(expr);
-                                } else {
-                                    return true;
-                                }
-                            } catch (e) {
-                                // this.msg.error(e);
-                                return false;
-                            }
-                        }
-                        //drill
-                        const eruptJson = eruptBuildModel.eruptModel.eruptJson;
-                        let createDrillModel = (drill: Drill, id) => {
-                            this.modal.create({
-                                nzWrapClassName: "modal-xxl",
-                                nzStyle: {top: "30px"},
-                                nzBodyStyle: {padding: "18px"},
-                                nzMaskClosable: false,
-                                nzKeyboard: false,
-                                nzTitle: drill.title,
-                                nzFooter: null,
-                                nzContent: TableComponent,
-                                nzComponentParams: {
-                                    drill: {
-                                        code: drill.code,
-                                        val: id,
-                                        erupt: drill.link.linkErupt,
-                                        eruptParent: eruptBuildModel.eruptModel.eruptName
-                                    }
-                                }
-                            });
-                        }
-                        for (let i in eruptJson.drills) {
-                            let drill = eruptJson.drills[i];
-                            editButtons.push({
-                                label: drill.title,
-                                type: 'dashed',
-                                onClick(options: ModalButtonOptions<any>) {
-                                    createDrillModel(drill, options['id']);
-                                }
-                            })
-                        }
-                        let getEditButtons = (record): ModalButtonOptions[] => {
-                            for (let editButton of editButtons) {
-                                editButton['id'] = record[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol]
-                                editButton['data'] = record
-                            }
-                            return editButtons;
-                        }
-                        const model = this.modal.create({
-                            nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
-                            nzWidth: fullLine ? 550 : null,
-                            nzStyle: {top: "60px"},
-                            nzMaskClosable: false,
-                            nzKeyboard: false,
-                            nzTitle: this.i18n.fanyi("global.editor"),
-                            nzOkText: this.i18n.fanyi("global.update"),
-                            nzContent: EditComponent,
-                            nzComponentParams: {
-                                eruptBuildModel: eruptBuildModel,
-                                id: item[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
-                                behavior: Scene.EDIT,
-                            },
-                            nzFooter: [
-                                {
-                                    label: this.i18n.fanyi("global.cancel"),
-                                    onClick: () => {
-                                        model.close();
-                                    }
-                                },
-                                ...getEditButtons(item),
-                                {
-                                    label: this.i18n.fanyi("global.update"),
-                                    type: "primary",
-                                    onClick: () => {
-                                        return model.triggerOk();
-                                    }
-                                },
-                            ],
-                            nzOnOk: async () => {
-                                let validateResult = model.getContentComponent().beforeSaveValidate();
-                                if (validateResult && dataHandler) {
-                                    let obj = dataHandler.eruptValueToObject(eruptBuildModel);
-                                    let res = await this.dataService.updateEruptData(eruptBuildModel.eruptModel.eruptName, obj).toPromise().then(res => res);
-                                    if (res.status === Status.SUCCESS) {
-                                        this.msg.success(this.i18n.fanyi("global.update.success"));
-                                        refreshing?.refresh()
-                                        return true;
-                                    } else {
-                                        return false;
-                                    }
-                                } else {
-                                    return false;
-                                }
-                            }
-                        });
+                        this.editItem(eruptBuildModel, fullLine, item, dataHandler, refreshing);
                     }else if(eruptBuildModel.eruptModel.eruptJson.power.viewDetails){
-                        this.modal.create({
-                            nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
-                            nzWidth: fullLine ? 550 : null,
-                            nzStyle: {top: "60px"},
-                            nzMaskClosable: true,
-                            nzKeyboard: true,
-                            nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",
-                            nzOkText: null,
-                            nzTitle: this.i18n.fanyi("global.view"),
-                            nzContent: EditComponent,
-                            nzComponentParams: {
-                                readonly: true,
-                                eruptBuildModel: eruptBuildModel,
-                                id: item[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
-                                behavior: Scene.EDIT,
-                            }
-                        });
+                        this.viewItem(fullLine, eruptBuildModel, item);
                     }
                 }
             }
             i++;
         }
         return cols;
+    }
+
+    public viewItem(fullLine: boolean, eruptBuildModel: EruptBuildModel, item: any) {
+        this.modal.create({
+            nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
+            nzWidth: fullLine ? 550 : null,
+            nzStyle: { top: "60px" },
+            nzMaskClosable: true,
+            nzKeyboard: true,
+            nzCancelText: this.i18n.fanyi("global.close") + "（ESC）",
+            nzOkText: null,
+            nzTitle: this.i18n.fanyi("global.view"),
+            nzContent: EditComponent,
+            nzComponentParams: {
+                readonly: true,
+                eruptBuildModel: eruptBuildModel,
+                id: item[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
+                behavior: Scene.EDIT,
+            }
+        });
+    }
+
+    public editItem(eruptBuildModel: EruptBuildModel, fullLine: boolean, item: any, dataHandler: DataHandlerService, refreshing: TableRefreshing) {
+        let editButtons: ModalButtonOptions[] = [];
+        const that = this;
+        let exprEval = (expr, item) => {
+            try {
+                if (expr) {
+                    return eval(expr);
+                } else {
+                    return true;
+                }
+            } catch (e) {
+                // this.msg.error(e);
+                return false;
+            }
+        };
+        //drill
+        const eruptJson = eruptBuildModel.eruptModel.eruptJson;
+        let createDrillModel = (drill: Drill, id) => {
+            this.modal.create({
+                nzWrapClassName: "modal-xxl",
+                nzStyle: { top: "30px" },
+                nzBodyStyle: { padding: "18px" },
+                nzMaskClosable: false,
+                nzKeyboard: false,
+                nzTitle: drill.title,
+                nzFooter: null,
+                nzContent: TableComponent,
+                nzComponentParams: {
+                    drill: {
+                        code: drill.code,
+                        val: id,
+                        erupt: drill.link.linkErupt,
+                        eruptParent: eruptBuildModel.eruptModel.eruptName
+                    }
+                }
+            });
+        };
+        for (let i in eruptJson.drills) {
+            let drill = eruptJson.drills[i];
+            editButtons.push({
+                label: drill.title,
+                type: 'dashed',
+                onClick(options: ModalButtonOptions<any>) {
+                    createDrillModel(drill, options['id']);
+                }
+            });
+        }
+        let getEditButtons = (record): ModalButtonOptions[] => {
+            for (let editButton of editButtons) {
+                editButton['id'] = record[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol];
+                editButton['data'] = record;
+            }
+            return editButtons;
+        };
+        const model = this.modal.create({
+            nzWrapClassName: fullLine ? null : "modal-lg edit-modal-lg",
+            nzWidth: fullLine ? 550 : null,
+            nzStyle: { top: "60px" },
+            nzMaskClosable: false,
+            nzKeyboard: false,
+            nzTitle: this.i18n.fanyi("global.editor"),
+            nzOkText: this.i18n.fanyi("global.update"),
+            nzContent: EditComponent,
+            nzComponentParams: {
+                eruptBuildModel: eruptBuildModel,
+                id: item[eruptBuildModel.eruptModel.eruptJson.primaryKeyCol],
+                behavior: Scene.EDIT,
+            },
+            nzFooter: [
+                {
+                    label: this.i18n.fanyi("global.cancel"),
+                    onClick: () => {
+                        model.close();
+                    }
+                },
+                ...getEditButtons(item),
+                {
+                    label: this.i18n.fanyi("global.update"),
+                    type: "primary",
+                    onClick: () => {
+                        return model.triggerOk();
+                    }
+                },
+            ],
+            nzOnOk: async () => {
+                let validateResult = model.getContentComponent().beforeSaveValidate();
+                if (validateResult && dataHandler) {
+                    let obj = dataHandler.eruptValueToObject(eruptBuildModel);
+                    let res = await this.dataService.updateEruptData(eruptBuildModel.eruptModel.eruptName, obj).toPromise().then(res => res);
+                    if (res.status === Status.SUCCESS) {
+                        this.msg.success(this.i18n.fanyi("global.update.success"));
+                        refreshing?.refresh();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        });
     }
 }

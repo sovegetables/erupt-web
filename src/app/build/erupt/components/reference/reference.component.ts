@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {EruptFieldModel} from "../../model/erupt-field.model";
 import {NzSizeLDSType} from "ng-zorro-antd/core/types";
 import {TreeSelectComponent} from "../tree-select/tree-select.component";
@@ -20,7 +20,14 @@ export class ReferenceComponent implements OnInit {
 
     @Input() eruptModel: EruptModel;
 
-    @Input() field: EruptFieldModel
+    private _field = null;
+
+    @Input()
+    get field(): EruptFieldModel { return this._field; }
+
+    set field(field: EruptFieldModel) {
+        this._field = field;
+    }
 
     @Input() size: NzSizeLDSType;
 
@@ -29,6 +36,8 @@ export class ReferenceComponent implements OnInit {
     @Input() parentEruptName: string
 
     @Input() enableAfterBtn = true;
+
+    inputLabel = null;
 
     editType = EditType;
 
@@ -45,13 +54,17 @@ export class ReferenceComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // this.inputLabel = '测试'
     }
 
     @Output() onSelectedOption = new EventEmitter<any>();
 
     onSelectionChange(event: any){
+        console.log('onSelectionChange event:', event)
         this.field.eruptFieldJson.edit.$viewValue = event.nzLabel;
+        console.log('onSelectionChange edit:', this.field.eruptFieldJson.edit)
         this.field.eruptFieldJson.edit.$value = event.nzValue;
+        console.log('onSelectionChange:', this.field.eruptFieldJson.edit)
         let element = this.optionMap.get(event.nzValue+'');
         if(element){
             this.onSelectedOption.emit({field: this.field, option:element})
@@ -81,12 +94,13 @@ export class ReferenceComponent implements OnInit {
         }
         conditions.push({key: label, value: e})
         this.dataService.queryEruptTableData(this.field.fieldClassName, RestPath.data + "/table/" + this.field.fieldClassName,
-            {pageIndex: 1, pageSize: 10}, null, body).subscribe(data => {
+            {pageIndex: 1, pageSize: 100}, null, body).subscribe(data => {
             this.autoCompleteOptions = []
             this.optionMap = data.list.reduce((map, cur) => {
                 map.set(cur["id"] + '', cur)
                 return map
             }, new Map<string, any>())
+            console.log('optionMap:', this.optionMap)
             data.list.forEach(i => {
                 this.autoCompleteOptions.push({value: i[label], id:i["id"]})
             })
@@ -139,6 +153,7 @@ export class ReferenceComponent implements OnInit {
                     this.clearReferValue(field);
                 }
                 field.eruptFieldJson.edit.$viewValue = tempVal.label;
+                this.inputLabel = tempVal.label;
                 field.eruptFieldJson.edit.$value = tempVal.id;
                 field.eruptFieldJson.edit.$tempValue = null;
                 return true;
@@ -180,6 +195,7 @@ export class ReferenceComponent implements OnInit {
                 }
             }, nzOnOk: () => {
                 let radioValue = edit.$tempValue;
+                console.log("radioValue:", radioValue)
                 if (!radioValue) {
                     this.msg.warning("请选中一条数据");
                     return false;
@@ -188,9 +204,12 @@ export class ReferenceComponent implements OnInit {
                     this.clearReferValue(field);
                 }
                 edit.$value = radioValue[edit.referenceTableType.id];
-                edit.$viewValue = radioValue[edit.referenceTableType.label
+                let label = radioValue[edit.referenceTableType.label
                     .replace(".", "_")] || '-----';
+                edit.$viewValue = label
+                this.inputLabel = label
                 edit.$tempValue = radioValue;
+                this.onSelectedOption.emit({field: this.field, option: radioValue})
                 return true;
             }
         });

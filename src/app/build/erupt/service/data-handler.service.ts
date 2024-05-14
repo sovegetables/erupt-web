@@ -14,6 +14,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzUploadFile} from "ng-zorro-antd/upload/interface";
 import {NzTreeNodeOptions} from "ng-zorro-antd/core/tree";
 import {I18NService} from "@core";
+import { log } from "console";
 
 @Injectable()
 export class DataHandlerService {
@@ -264,6 +265,7 @@ export class DataHandlerService {
                             eruptData[field.fieldName] = {};
                             eruptData[field.fieldName][edit.referenceTableType.id] = edit.$value;
                             eruptData[field.fieldName][edit.referenceTableType.label] = edit.$viewValue;
+                            console.log('edit.$viewValue:', edit.$viewValue);
                         } else {
                             edit.$value = null;
                         }
@@ -304,7 +306,22 @@ export class DataHandlerService {
                         break;
                     case EditType.TAB_TABLE_ADD:
                         if (edit.$value) {
-                            eruptData[field.fieldName] = edit.$value;
+                            let values = []
+                            edit.$tempValue?.forEach(el => {
+                                let obj = {}
+                                Object.keys(el).forEach(key => {
+                                    let item = el[key]
+                                    let field = item.eruptFieldModel as EruptFieldModel
+                                    if(field.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE){
+                                        obj[field.fieldName] = {}
+                                        obj[field.fieldName][field.primaryKeyCol] = field.eruptFieldJson.edit.$value
+                                    }else{
+                                        obj[key] = item.value
+                                    }
+                                })
+                                values.push(obj)
+                            });
+                            eruptData[field.fieldName] = values;
                         }
                         break;
                     case EditType.ATTACHMENT:
@@ -355,6 +372,7 @@ export class DataHandlerService {
                 });
             }
         }
+        console.log('eruptData:', eruptData);
         return eruptData;
     }
 
@@ -514,6 +532,7 @@ export class DataHandlerService {
                     case EditType.TAB_TABLE_ADD:
                     case EditType.TAB_TABLE_REFER:
                         edit.$value = object[field.fieldName] || [];
+                        edit.$initValue = object[field.fieldName] || [];
                         break;
                     default:
                         edit.$value = object[field.fieldName];

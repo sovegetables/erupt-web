@@ -700,8 +700,11 @@ export class TableComponent implements OnInit {
                         if (this._drill) {
                             Object.assign(header, DataService.drillToHeader(this._drill));
                         }
+                        console.log('addEruptData:', this.eruptBuildModel)
+                        let requestObj = this.dataHandler.eruptValueToObject(this.eruptBuildModel)
+                        console.log('requestObj:', requestObj)
                         let res = await this.dataService.addEruptData(this.eruptBuildModel.eruptModel.eruptName,
-                            this.dataHandler.eruptValueToObject(this.eruptBuildModel), header).toPromise().then(res => res);
+                            requestObj, header).toPromise().then(res => res);
                         if (res.status === Status.SUCCESS) {
                             this.msg.success(this.i18n.fanyi("global.add.success"));
                             this.query();
@@ -720,6 +723,20 @@ export class TableComponent implements OnInit {
 
     pageSizeChange(size) {
         this.query(1, size);
+    }
+
+    editRow() {
+        if (!this.selectedRows || this.selectedRows.length === 0) {
+            this.msg.warning(this.i18n.fanyi("table.select_edit_item"));
+            return;
+        }
+        let row = this.selectedRows[0]
+        let that = this;
+        this.uiBuildService.editItem(this.eruptBuildModel, false, row,this.dataHandlerService, new class implements TableRefreshing {
+            refresh(): any {
+                that.query()
+            }
+        });
     }
 
     //批量删除

@@ -43,7 +43,7 @@ table.operation,操作,操作,Operation,opérations,操作,조작,операци
 table.delete.hint,确认删除吗？,確認刪除嗎？,Are you sure to delete?,Confirmer la suppression?,削除を確認しますか？,삭제확인하시겠습니까?,Подтвердите удаление?,¿Confirmar la eliminación?
 table.add,新增,新增,Add,nouveaux,追加,새로추가,нов,nuevos
 table.delete,删除,刪除,Delete,supprimé,削除,삭제,удал,borrar
-table.download,下载,下載,Download,Le téléchargement,ダウンロード,다운로드,загрузк,descargar
+table.download,导出,下載,Download,Le téléchargement,ダウンロード,다운로드,загрузк,descargar
 table.import,导入,導入,Import,importations,インポート,가져오기,импортирова,importación
 table.download_template,下载模板,下載模板,Download template,Télécharger le template,テンプレートをダウンロード,템플릿다운로드,Загрузка шаблона,Descargar la plantilla
 table.excel.import_hint,单击或拖动Excel文件到此区域上传,單擊或拖動Excel文件到此區域上傳,Click or drag the Excel file to this area to upload,Cliquez ou faites glisser le fichier Excel dans cette zone pour le télécharger,Excelファイルをクリックまたはドラッグしてこのエリアにアップロードします。,Excel파일을이지역에업로드하려면누르거나드래그하십시오,Нажмите или перетащите файл Excel в эту область,Haga clic o arrastre el archivo Excel a esta área para subir
@@ -51,6 +51,7 @@ table.query,查询,查詢,Query,enquêtes,クエリー,조회,запрос,consu
 table.col.ctrl,表格列控制,表格列控製,Table Control,Contrôle des colonnes tabulaires,テーブル列制御,표열제어,Управление колонкой таблиц,Control de columnas tabulares
 table.reset,重置条件,重置條件,Reset,Réinitialiser les conditions,条件をリセット,조건초기화,Условие сброса,Restablecer las condiciones
 table.select_delete_item,请选中要删除的数据！,請選中要刪除的數據！,Please select delete data!,Veuillez cocher les données que vous souhaitez supprimer!,削除するデータを選択してください。,삭제할데이터를선택하십시오!,"Пожалуйста, выберите удаленные данные!","Por favor, seleccione los datos que desea eliminar!"
+table.select_edit_item,请选中要编辑的数据！,請選中要编辑的數據！,Please select delete data!,Veuillez cocher les données que vous souhaitez supprimer!,削除するデータを選択してください。,삭제할데이터를선택하십시오!,"Пожалуйста, выберите удаленные данные!","Por favor, seleccione los datos que desea eliminar!"
 table.hint_delete_number,确定要删除这{}条数据吗？,確定要刪除這{}條數據嗎？,Are you sure want to delete this {} data?,Sûr de vouloir supprimer ces {} données?,この{}データを削除しますか？,이{}개의데이터를삭제하시겠습니까?,"Вы уверены, что хотите удалить эту информацию?",¿Seguro de que desea eliminar estos {} datos?
 table.require.select_one,执行该操作时请至少选中一条数据,執行該操作時請至少選中一條數據,Select at least one data before performing this operation,Veuillez sélectionner au moins une donnée pour effectuer cette opération,この操作を行う場合は、少なくとも一つのデータを選択してください。,이작업을수행할때최소한하나의데이터를선택하십시오,"При выполнении этой операции, пожалуйста, выберите хотя бы Один файл","Por favor, seleccione al menos un dato para realizar esta operación"
 table.hint.operation,请确认是否执行此操作,請確認是否執行此操作,Confirm whether to perform this operation,Veuillez confirmer si cette action est effectuée,この操作を実行するかどうか確認してください。,이동작을실행할지확인하십시오,"Пожалуйста, подтвердите выполнение этой операции",Confirme si realiza esta acción
