@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {EruptFieldModel, VL} from "../../model/erupt-field.model";
 import {DataService} from "@shared/service/data.service";
 import {EruptModel} from "../../model/erupt.model";
@@ -30,6 +30,8 @@ export class ChoiceComponent implements OnInit {
 
     //是否开启联动功能
     @Input() dependLinkage = true;
+
+    @Output() onSelectedChoice = new EventEmitter<any>();
 
     isLoading = false;
 
@@ -106,4 +108,8 @@ export class ChoiceComponent implements OnInit {
         }
     }
 
+    onModelChange($event: any) {
+        console.log('onModelChange', $event)
+        this.onSelectedChoice.emit($event)
+    }
 }

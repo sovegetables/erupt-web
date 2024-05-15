@@ -39,6 +39,7 @@ import {NzImageModule} from "ng-zorro-antd/image";
 import {SearchSeComponent} from "./components/search-se/search-se.component";
 import {NzQRCodeModule} from "ng-zorro-antd/qr-code";
 import {NzRateModule} from "ng-zorro-antd/rate";
+import { FormComponent } from "./view/form/form.component";
 
 @NgModule({
     imports: [
@@ -96,6 +97,7 @@ import {NzRateModule} from "ng-zorro-antd/rate";
         ViewTypeComponent,
         EditComponent,
         TreeComponent,
+        FormComponent,
         TableViewComponent,
         TableComponent,
         LayoutTreeComponent,

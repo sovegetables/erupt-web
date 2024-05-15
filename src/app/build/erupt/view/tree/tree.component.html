@@ -1,10 +1,12 @@
 <div style="padding: 16px">
     <div nz-row [nzGutter]="12" *ngIf="eruptBuildModel" [id]="eruptName">
         <div nz-col [nzXs]="24" [nzSm]="8" [nzMd]="8" [nzLg]="6">
+            <!-- 新增按钮 -->
             <button nz-button nzType="dashed" style="display:block;width: 100%;" (click)="addBlock()" class="mb-sm"
                     *ngIf="eruptBuildModel.eruptModel.eruptJson.power.add">
                 <i nz-icon nzType="plus" theme="outline"></i> {{'tree.add_button'|translate}}
             </button>
+            <!-- 搜索 -->
             <nz-input-group [nzSuffix]="suffixIcon" class="mb-sm" style="width: 100%;">
                 <input type="text" nz-input placeholder="Search" [(ngModel)]="searchValue">
             </nz-input-group>
@@ -12,6 +14,7 @@
                 <i nz-icon nzType="search"></i>
             </ng-template>
             <br>
+            <!-- 树 -->
             <div [ngStyle]="{height:'calc(100vh - 178px - '+(settingSrv.layout['reuse']?'40px':'0px') +')',overflow: 'auto'}"
                  class="layout-tree-view" [scrollTop]="treeScrollTop" #treeDiv>
                 <nz-skeleton [nzLoading]="treeLoading&&this.nodes.length==0" [nzActive]="true">
@@ -30,6 +33,7 @@
             <ng-container>
                 <div nz-row class="mb-sm">
                     <div nz-col [nzXs]="24">
+                        <!-- 保存、删除、更新按钮 -->
                         <ng-container *ngIf="selectLeaf">
                             <button nz-button (click)="save()" [disabled]="loading" id="erupt-btn-save"
                                     *ngIf="eruptBuildModel.eruptModel.eruptJson.power.edit">

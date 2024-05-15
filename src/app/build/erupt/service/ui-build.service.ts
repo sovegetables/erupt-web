@@ -101,8 +101,19 @@ export class UiBuildService {
                 switch (view.eruptFieldModel.eruptFieldJson.edit.type) {
                     case EditType.CHOICE:
                         obj.format = (item: any) => {
+                            console.log('view.column:', view.column)
+                            console.log('item view.column:', item[view.column])
+                            console.log('choiceMap view.column:', view.eruptFieldModel.choiceMap)
                             if (item[view.column]) {
-                                return view.eruptFieldModel.choiceMap.get(item[view.column] + "").label;
+                                let label
+                                try{
+                                    label = view.eruptFieldModel.choiceMap.get(item[view.column] + "").label;
+                                }catch(e){
+                                    console.log(e)
+                                    let value = item[view.column].eruptFieldModel.eruptFieldJson.edit.$value
+                                    label = item[view.column].eruptFieldModel.choiceMap.get(value + "").label;
+                                }
+                                return label;
                             } else {
                                 return "";
                             }
@@ -753,6 +764,7 @@ export class UiBuildService {
             nzOnOk: async () => {
                 let validateResult = model.getContentComponent().beforeSaveValidate();
                 if (validateResult && dataHandler) {
+                    console.log('eruptBuildModel:', eruptBuildModel)
                     let obj = dataHandler.eruptValueToObject(eruptBuildModel);
                     let res = await this.dataService.updateEruptData(eruptBuildModel.eruptModel.eruptName, obj).toPromise().then(res => res);
                     if (res.status === Status.SUCCESS) {

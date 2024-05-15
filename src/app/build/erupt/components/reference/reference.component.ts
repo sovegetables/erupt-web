@@ -54,7 +54,6 @@ export class ReferenceComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // this.inputLabel = '测试'
     }
 
     @Output() onSelectedOption = new EventEmitter<any>();

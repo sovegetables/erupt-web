@@ -3,6 +3,8 @@
         <!-- 编辑字段 -->
         <erupt-edit-type [loading]="loading" #eruptEdit [eruptBuildModel]="eruptBuildModel" [readonly]="readonly"
                          [initEruptFieldModelMap] = 'initEruptFieldModelMap'
+                         [col]="col"
+                         [size]="size"
                          [mode]="behavior"></erupt-edit-type>
         <!-- Tab -->
         <nz-tabset *ngIf="eruptBuildModel.tabErupts" [nzType]="'card'" style="margin-top: 5px">

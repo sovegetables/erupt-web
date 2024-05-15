@@ -4,7 +4,7 @@ import {DataService} from "@shared/service/data.service";
 import {DataHandlerService} from "../../service/data-handler.service";
 import {EruptFieldModel} from "../../model/erupt-field.model";
 import {BuildConfig} from "../../model/build-config";
-import {EditType, Scene, SelectMode} from "../../model/erupt.enum";
+import {ChoiceEnum, EditType, Scene, SelectMode} from "../../model/erupt.enum";
 import {UiBuildService} from "../../service/ui-build.service";
 import {I18NService} from "@core";
 import {STChange, STColumn, STComponent} from "@delon/abc/st";
@@ -12,6 +12,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
 import { deepCopy } from "@delon/util";
 import { ReferenceTableComponent } from "../reference-table/reference-table.component";
+import { colRules } from "@shared/model/util.model";
 
 @Component({
     selector: "tab-table",
@@ -20,6 +21,9 @@ import { ReferenceTableComponent } from "../reference-table/reference-table.comp
     styleUrls: ["./tab-table.component.less"]
 })
 export class TabTableComponent implements OnInit {
+
+    //UI
+    @Input() col = colRules[3];
 
     @Input() eruptBuildModel: EruptBuildModel;
 
@@ -47,6 +51,8 @@ export class TabTableComponent implements OnInit {
     editType = EditType;
 
     data = [];
+
+    choiceEnum = ChoiceEnum;
 
     constructor(private dataService: DataService,
                 private uiBuildService: UiBuildService,
@@ -96,10 +102,13 @@ export class TabTableComponent implements OnInit {
             }
             const tableColumn = tableColumns[j];
             const key = tableColumn.column;
+            console.log("key: ", key)
             const view = tableColumn;
+            console.log("value: ", value)
             let v = value[key];
+            console.log("v: ", v)
+            v = v? v: null
             let eruptFieldModel = deepCopy(view.eruptFieldModel);
-            // let eruptFieldModel = view.eruptFieldModel;
             let eruptFieldJson = eruptFieldModel.eruptFieldJson;
             let type = eruptFieldJson.edit.type;
             if (type == EditType.DATE) {
@@ -122,8 +131,11 @@ export class TabTableComponent implements OnInit {
                 v = no
                 eruptFieldJson.edit.$value = v
                 eruptFieldJson.edit.$viewValue = v
-            } else{
-                eruptFieldJson.edit.$value = v ? v : null
+            } else if(type == EditType.CHOICE){
+                eruptFieldJson.edit.$value = v + ''
+                eruptFieldJson.edit.$viewValue = v + ''
+            } else {
+                eruptFieldJson.edit.$value = v
                 eruptFieldJson.edit.$viewValue = v
             }
             eruptFieldModel.serialNumber = no
@@ -142,11 +154,20 @@ export class TabTableComponent implements OnInit {
         console.log('index:', index)
         console.log('field:', field)
         console.log('event:', event)
-        let value = (event.target as HTMLInputElement).value
         let dataItem = this.data[index];
         console.log('dataItem:', dataItem)
-        dataItem[field.fieldName].value = value
-        dataItem[field.fieldName].eruptFieldModel.eruptFieldJson.edit.$viewValue = value
+        const item = dataItem[field.fieldName];
+        const editType = item.eruptFieldModel.eruptFieldJson.edit.type;
+        if(editType == EditType.CHOICE || editType == EditType.NUMBER){
+            item.value = event
+            item.eruptFieldModel.eruptFieldJson.edit.$viewValue = event
+            item.eruptFieldModel.eruptFieldJson.edit.$value = event
+        }else{
+            let value = (event.target as HTMLInputElement).value
+            item.value = value
+            item.eruptFieldModel.eruptFieldJson.edit.$viewValue = value
+            item.eruptFieldModel.eruptFieldJson.edit.$value = value
+        }
         console.log('onSelectedOption final data:', this.data)
     }
 
@@ -175,6 +196,8 @@ export class TabTableComponent implements OnInit {
                 ){
                     columnChanged = true
                     dataIndex = index
+                    console.log("index", index)
+                    console.log("key", key)
                     let dataItem = this.data[index][key];
                     let subColumnKey = key.substr(key.indexOf('_') + 1, key.length);
                     console.log('subColumnKey:', subColumnKey)
@@ -250,7 +273,9 @@ export class TabTableComponent implements OnInit {
         let value =  <any>deepCopy(this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$initValue)
         console.log("addData:", value)
         let item = []
-        this.convertToLineItem(value, item, this.st._data.length + 1);
+        value.forEach(el => {
+            this.convertToLineItem(el, item, this.st._data.length + 1);
+        });
         item.forEach(i => {
             this.data.push(i)
         })
@@ -333,53 +358,17 @@ export class TabTableComponent implements OnInit {
         }
     }
 
-    resetSerialNumber(){
-        let values = this.data;
-        for (let i = 0; i < values.length; i++) {
-            let value = values[i];
-            Object.entries(value).forEach(([k, v]) => {
-                let item = value[k];
-                let edit = item.eruptFieldModel.eruptFieldJson.edit;
-                const type = edit.type;
-                if(type == EditType.SERIAL_NUMBER){
-                    item.value = i + 1
-                    return
-                }
-            });
-        }
-        // this.st.removeRow() todo
-        this.st.reload()
-    }
-
     deleteData() {
+        console.log("checkedRow:", this.checkedRow)
         if (this.checkedRow.length) {
-            let values = this.data;
-            for (let i = 0; i < values.length; i++) {
-                let value = values[i];
-                let serialNumberValue = null
-                let serialNumberValueKey = null
-                Object.entries(value).forEach(([k, v]) => {
-                    let item = value[k];
-                    let edit = item.eruptFieldModel.eruptFieldJson.edit;
-                    const type = edit.type;
-                    if(type == EditType.SERIAL_NUMBER){
-                        serialNumberValue = item.value
-                        serialNumberValueKey = k
-                        return
-                    }
-                });
-                if(serialNumberValue != null){
-                    let canSplice = false
-                    this.checkedRow.forEach((cr) => {
-                        if(cr[serialNumberValueKey].value == serialNumberValue){
-                            values.splice(i, 1);
-                            canSplice = true
-                        }
-                    });
-                    if(canSplice) this.resetSerialNumber()
-                }
-            }
-            this.st.reload();
+            let indexs = []
+            this.checkedRow.forEach(row => {
+                indexs.push(row['serialNum'].value - 1)
+            })
+            indexs.forEach(index => {
+                this.data.splice(index, 1)
+                this.st.removeRow(index)
+            })
             this.checkedRow = [];
         } else {
             this.msg.warning(this.i18n.fanyi("global.delete.hint.check"));

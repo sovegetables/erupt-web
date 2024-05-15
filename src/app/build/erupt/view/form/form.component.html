@@ -1,0 +1,28 @@
+<div style="padding: 16px">
+    <div nz-row [nzGutter]="12" *ngIf="eruptBuildModel" [id]="eruptName">
+        <div nz-col class="mb-sm" [nzXs]="24" [nzSm]="24" [nzMd]="24" [nzLg]="24">
+            <ng-container>
+                <div nz-row class="mb-sm">
+                    <div nz-col [nzXs]="24">
+                        <ng-container>
+                            <button nz-button (click)="add()" [disabled]="loading" id="erupt-btn-add-new"
+                                    *ngIf="eruptBuildModel.eruptModel.eruptJson.power.add">
+                                {{ eruptBuildModel.eruptModel.eruptJson.power.addBtnName? eruptBuildModel.eruptModel.eruptJson.power.addBtnName : 'tree.add'|translate }}
+                            </button>
+                        </ng-container>
+                    </div>
+                </div>
+                <div [ngStyle]="{overflow: 'auto',overflowX:'hidden'}" style="width: 100%;height:calc(100vh - 140px)">
+                    <nz-collapse nzAccordion nzExpandIconPosition="right">
+                        <nz-collapse-panel [nzActive]="true" [nzHeader]="'tree.base'|translate" [nzDisabled]="true" [nzShowArrow]="false">
+                            <nz-spin [nzSpinning]="loading" nzSize="large">
+                                <erupt-edit [eruptBuildModel]="eruptBuildModel" [col]="col" [size]="size">
+                                </erupt-edit>
+                            </nz-spin>
+                        </nz-collapse-panel>
+                    </nz-collapse>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

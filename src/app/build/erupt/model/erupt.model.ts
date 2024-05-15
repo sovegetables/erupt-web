@@ -124,6 +124,7 @@ export interface RowOperation {
 
 export interface Power {
     add: boolean;
+    addBtnName: String;
     delete: boolean;
     edit: boolean;
     query: boolean;

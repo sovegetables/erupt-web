@@ -4,6 +4,7 @@
     <input nz-input [nzSize]="size"
            [required]="field.eruptFieldJson.edit.notNull"
            [disabled]="readonly"
+           [readOnly]="false"
            [placeholder]="field.eruptFieldJson.edit.placeHolder"
            [(ngModel)]="field.eruptFieldJson.edit.$viewValue"
            (ngModelChange)="onChange($event)"

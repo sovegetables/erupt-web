@@ -9,6 +9,7 @@ export interface MenuVo {
 }
 
 export enum MenuTypeEnum {
+    form = "form",
     table = "table",
     tree = "tree",
     fill = "fill",

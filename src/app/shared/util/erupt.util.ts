@@ -19,6 +19,8 @@ export function generateMenuPath(type: string, value: string) {
 function joinPath(type: string, value: string): string {
     let menuValue = value || '';
     switch (type) {
+        case MenuTypeEnum.form:
+            return "/build/form/" + menuValue;
         case MenuTypeEnum.table:
             return "/build/table/" + menuValue;
         case MenuTypeEnum.tree:

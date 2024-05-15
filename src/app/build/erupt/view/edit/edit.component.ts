@@ -9,6 +9,7 @@ import {DataService} from "@shared/service/data.service";
 import {I18NService} from "@core";
 import {NzMessageService} from "ng-zorro-antd/message";
 import {NzModalService} from "ng-zorro-antd/modal";
+import { colRules } from "@shared/model/util.model";
 
 @Component({
     selector: "erupt-edit",
@@ -28,6 +29,11 @@ export class EditComponent implements OnInit, OnDestroy {
     @Input() eruptBuildModel: EruptBuildModel;
 
     @Input() id: any;
+
+    //UI
+    @Input() col = colRules[3];
+
+    @Input() size: "large" | "small" | "default" = "large";
 
     @Input() readonly: boolean = false;
 

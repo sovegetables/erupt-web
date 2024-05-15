@@ -307,16 +307,20 @@ export class DataHandlerService {
                     case EditType.TAB_TABLE_ADD:
                         if (edit.$value) {
                             let values = []
+                            console.log('$tempValue:', edit.$tempValue)
                             edit.$tempValue?.forEach(el => {
                                 let obj = {}
                                 Object.keys(el).forEach(key => {
                                     let item = el[key]
-                                    let field = item.eruptFieldModel as EruptFieldModel
-                                    if(field.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE){
-                                        obj[field.fieldName] = {}
-                                        obj[field.fieldName][field.primaryKeyCol] = field.eruptFieldJson.edit.$value
-                                    }else{
-                                        obj[key] = item.value
+                                    console.log('item:', item)
+                                    if(item.eruptFieldModel){
+                                        let field = item.eruptFieldModel as EruptFieldModel
+                                        if(field.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE){
+                                            obj[field.fieldName] = {}
+                                            obj[field.fieldName][field.primaryKeyCol] = field.eruptFieldJson.edit.$value
+                                        }else{
+                                            obj[key] = item.value
+                                        }
                                     }
                                 })
                                 values.push(obj)

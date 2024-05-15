@@ -38,7 +38,7 @@
                                              [nzMin]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.min"
                                              [nzMax]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.max"
                                              [nzStep]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.numberType.step"
-                                             (input)="onInputChange(index,item[column['indexKey']].eruptFieldModel, $event)"
+                                             (ngModelChange)="onInputChange(index,item[column['indexKey']].eruptFieldModel, $event)"
                                              >
                             </nz-input-number>
                         </ng-container>
@@ -86,7 +86,40 @@
                             </erupt-date>
                         </ng-container>
                         <ng-container *ngSwitchCase="editType.BOOLEAN">
+                            <!-- todo -->
+                        </ng-container>
+                        <ng-container *ngSwitchCase="editType.CHOICE">
+                            <ng-container [ngSwitch]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.choiceType.type">
+                                <ng-container *ngSwitchCase="choiceEnum.RADIO">
+                                    <div nz-col [nzXs]="24">
+                                        <!-- <se [label]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.title"
+                                            [required]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.notNull"
+                                            [optionalHelp]="item[column['indexKey']].eruptFieldModel.eruptFieldJson.edit.desc">
+                                            <erupt-choice [eruptModel]="tabErupt.eruptBuildModel.eruptModel"
+                                                          [eruptField]="item[column['indexKey']].eruptFieldModel"
+                                                          size="small"
+                                                          [eruptParentName]="eruptBuildModel.eruptModel.eruptName"
+                                                          [readonly]="isReadonly(item[column['indexKey']].eruptFieldModel)" #choice>
 
+                                            </erupt-choice>
+                                        </se> -->
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngSwitchCase="choiceEnum.SELECT">
+                                    <div nz-col [nzXs]="col.xs" [nzSm]="col.sm" [nzMd]="col.md"
+                                         [nzLg]="col.lg"
+                                         [nzXl]="col.xl"
+                                         [nzXXl]="col.xxl">
+                                        <erupt-choice [eruptModel]="tabErupt.eruptBuildModel.eruptModel"
+                                                        [eruptField]="item[column['indexKey']].eruptFieldModel"
+                                                        size="small"
+                                                        (onSelectedChoice)="onInputChange(index,item[column['indexKey']].eruptFieldModel, $event)"
+                                                        [eruptParentName]="eruptBuildModel.eruptModel.eruptName"
+                                                        [readonly]="isReadonly(item[column['indexKey']].eruptFieldModel)" #choice>
+                                        </erupt-choice>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
                         </ng-container>
                     </ng-container>
             </ng-template>
