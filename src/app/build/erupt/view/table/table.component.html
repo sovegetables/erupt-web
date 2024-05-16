@@ -16,7 +16,8 @@
                 <ng-template #operationButtons>
                     <ng-container *ngIf="eruptBuildModel.eruptModel.eruptJson.rowOperation">
                         <ng-container *ngFor="let item of eruptBuildModel.eruptModel.eruptJson.rowOperation">
-                            <ng-container *ngIf="item.mode != operationMode.SINGLE">
+                            <!-- <ng-container *ngIf="item.mode != operationMode.SINGLE"> -->
+                            <ng-container>
                                 <button nz-button class="mb-sm" [nz-tooltip]="item.tip"
                                         (click)="createOperator(item)">
 <!--                                    <i class="fa" [ngClass]="item.icon"></i>-->
@@ -94,7 +95,7 @@
                                {{'table.delete'|translate}}
                             </button>
                         </ng-container>
-                        <ng-container *ngIf="operationButtonNum <= 3">
+                        <ng-container *ngIf="operationButtonNum <= 8">
                             <ng-template [ngTemplateOutlet]="operationButtons"></ng-template>
                         </ng-container>
                     </div>

@@ -359,69 +359,69 @@ export class TableComponent implements OnInit {
                 }
             });
         }*/
-        /*let tableButtons: STColumnButton[] = []
-        let editButtons: ModalButtonOptions[] = [];
-        const that = this;
-        let exprEval = (expr, item) => {
-            try {
-                if (expr) {
-                    return eval(expr);
-                } else {
-                    return true;
-                }
-            } catch (e) {
-                // this.msg.error(e);
-                return false;
-            }
-        }*/
-        /*for (let i in this.eruptBuildModel.eruptModel.eruptJson.rowOperation) {
-            let ro = this.eruptBuildModel.eruptModel.eruptJson.rowOperation[i];
-            if (ro.mode !== OperationMode.BUTTON) {
-                let text = "";
-                if (ro.icon) {
-                    text = `<i class=\"${ro.icon}\"></i>`;
-                } else {
-                    text = ro.title;
-                }
 
-                tableButtons.push({
-                    type: 'link',
-                    text: text,
-                    tooltip: ro.title + (ro.tip && "(" + ro.tip + ")"),
-                    click: (record: any, modal: any) => {
-                        that.createOperator(ro, record);
-                    },
-                    iifBehavior: ro.ifExprBehavior == OperationIfExprBehavior.DISABLE ? "disabled" : "hide",
-                    iif: (item) => {
-                        return exprEval(ro.ifExpr, item);
-                    }
-                });
-            }
-        }*/
+        // let tableButtons: STColumnButton[] = []
+        // let editButtons: ModalButtonOptions[] = [];
+        // const that = this;
+        // let exprEval = (expr, item) => {
+        //     try {
+        //         if (expr) {
+        //             return eval(expr);
+        //         } else {
+        //             return true;
+        //         }
+        //     } catch (e) {
+        //         // this.msg.error(e);
+        //         return false;
+        //     }
+        // }
+        // for (let i in this.eruptBuildModel.eruptModel.eruptJson.rowOperation) {
+        //     let ro = this.eruptBuildModel.eruptModel.eruptJson.rowOperation[i];
+        //     if (ro.mode !== OperationMode.BUTTON) {
+        //         let text = "";
+        //         if (ro.icon) {
+        //             text = `<i class=\"${ro.icon}\"></i>`;
+        //         } else {
+        //             text = ro.title;
+        //         }
+
+        //         tableButtons.push({
+        //             type: 'link',
+        //             text: text,
+        //             tooltip: ro.title + (ro.tip && "(" + ro.tip + ")"),
+        //             click: (record: any, modal: any) => {
+        //                 that.createOperator(ro, record);
+        //             },
+        //             iifBehavior: ro.ifExprBehavior == OperationIfExprBehavior.DISABLE ? "disabled" : "hide",
+        //             iif: (item) => {
+        //                 return exprEval(ro.ifExpr, item);
+        //             }
+        //         });
+        //     }
+        // }
 
         //drill
-        const eruptJson = this.eruptBuildModel.eruptModel.eruptJson;
-
-        let createDrillModel = (drill: Drill, id) => {
-            this.modal.create({
-                nzWrapClassName: "modal-xxl",
-                nzStyle: {top: "30px"},
-                nzBodyStyle: {padding: "18px"},
-                nzMaskClosable: false,
-                nzKeyboard: false,
-                nzTitle: drill.title,
-                nzFooter: null,
-                nzContent: TableComponent,
-                nzComponentParams: {
-                    drill: {
-                        code: drill.code,
-                        val: id,
-                        erupt: drill.link.linkErupt,
-                        eruptParent: this.eruptBuildModel.eruptModel.eruptName
-                    }
-                }
-            });
-        }
+        // const eruptJson = this.eruptBuildModel.eruptModel.eruptJson;
+        // let createDrillModel = (drill: Drill, id) => {
+        //     this.modal.create({
+        //         nzWrapClassName: "modal-xxl",
+        //         nzStyle: {top: "30px"},
+        //         nzBodyStyle: {padding: "18px"},
+        //         nzMaskClosable: false,
+        //         nzKeyboard: false,
+        //         nzTitle: drill.title,
+        //         nzFooter: null,
+        //         nzContent: TableComponent,
+        //         nzComponentParams: {
+        //             drill: {
+        //                 code: drill.code,
+        //                 val: id,
+        //                 erupt: drill.link.linkErupt,
+        //                 eruptParent: this.eruptBuildModel.eruptModel.eruptName
+        //             }
+        //         }
+        //     });
+        // }
 
         /*for (let i in eruptJson.drills) {
             let drill = eruptJson.drills[i];
@@ -565,6 +565,9 @@ export class TableComponent implements OnInit {
             if (ro.mode === OperationMode.MULTI && this.selectedRows.length === 0) {
                 this.msg.warning(this.i18n.fanyi("table.require.select_one"));
                 return;
+            }else if (ro.mode === OperationMode.SINGLE && this.selectedRows.length != 1) {
+                this.msg.warning(this.i18n.fanyi("table.require.only_one"));
+                return;
             }
             this.selectedRows.forEach(e => {
                 ids.push(e[eruptModel.eruptJson.primaryKeyCol]);
@@ -595,10 +598,10 @@ export class TableComponent implements OnInit {
                 operationErupt = this.eruptBuildModel.operationErupts[ro.code];
             }
             if (operationErupt) {
-                this.dataHandler.initErupt({eruptModel: operationErupt});
-                this.dataHandler.emptyEruptValue({
-                    eruptModel: operationErupt
-                });
+                // this.dataHandler.initErupt({eruptModel: operationErupt});
+                // this.dataHandler.emptyEruptValue({
+                //     eruptModel: operationErupt
+                // });
                 let modal: NzModalRef = this.modal.create({
                     nzKeyboard: false,
                     nzTitle: ro.title,
@@ -626,20 +629,24 @@ export class TableComponent implements OnInit {
                             return false;
                         }
                     },
-                    nzContent: EditTypeComponent,
+                    // nzContent: EditTypeComponent,
+                    nzContent: EditComponent,
                     nzComponentParams: {
-                        mode: Scene.ADD,
+                        behavior: Scene.ADD,
                         eruptBuildModel: {
                             eruptModel: operationErupt
                         },
-                        parentEruptName: this.eruptBuildModel.eruptModel.eruptName
+                        parentEruptName: this.eruptBuildModel.eruptModel.eruptName,
+                        parentIds: ids
                     }
                 });
-                this.dataService.getInitValue(operationErupt.eruptName, this.eruptBuildModel.eruptModel.eruptName).subscribe(data => {
-                    this.dataHandlerService.objectToEruptValue(data, {
-                        eruptModel: operationErupt
-                    });
-                });
+                // this.dataService.getInitValue(operationErupt.eruptName,
+                //     this.eruptBuildModel.eruptModel.eruptName,
+                //     {parentIds: ids}).subscribe(data => {
+                //     this.dataHandlerService.objectToEruptValue(data, {
+                //         eruptModel: operationErupt
+                //     });
+                // });
             } else {
                 this.modal.confirm({
                     nzTitle: ro.title,
@@ -701,7 +708,7 @@ export class TableComponent implements OnInit {
                             Object.assign(header, DataService.drillToHeader(this._drill));
                         }
                         console.log('addEruptData:', this.eruptBuildModel)
-                        let requestObj = this.dataHandler.eruptValueToObject(this.eruptBuildModel)
+                        let requestObj = this.dataHandler.eruptValueToObject(this.eruptBuildModel, Scene.ADD)
                         console.log('requestObj:', requestObj)
                         let res = await this.dataService.addEruptData(this.eruptBuildModel.eruptModel.eruptName,
                             requestObj, header).toPromise().then(res => res);

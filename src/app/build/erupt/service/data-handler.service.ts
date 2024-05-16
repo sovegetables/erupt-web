@@ -1,6 +1,6 @@
 import {Edit, EruptFieldModel, VL} from "../model/erupt-field.model";
 import {EruptModel, Tree} from "../model/erupt.model";
-import {DateEnum, EditType} from "../model/erupt.enum";
+import {DateEnum, EditType, Scene} from "../model/erupt.enum";
 import {deepCopy} from "@delon/util";
 import {Inject, Injectable} from "@angular/core";
 import {EruptBuildModel} from "../model/erupt-build.model";
@@ -14,7 +14,6 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzUploadFile} from "ng-zorro-antd/upload/interface";
 import {NzTreeNodeOptions} from "ng-zorro-antd/core/tree";
 import {I18NService} from "@core";
-import { log } from "console";
 
 @Injectable()
 export class DataHandlerService {
@@ -222,7 +221,7 @@ export class DataHandlerService {
     }
 
     //将eruptModel中的内容拼接成后台需要的json格式
-    eruptValueToObject(eruptBuildModel: EruptBuildModel): object {
+    eruptValueToObject(eruptBuildModel: EruptBuildModel, _scene: Scene = Scene.EDIT): object {
         const eruptData: any = {};
         eruptBuildModel.eruptModel.eruptFieldModels.forEach(field => {
             const edit = field.eruptFieldJson.edit;
@@ -426,7 +425,7 @@ export class DataHandlerService {
 
 
     //将后台数据转化成前端可视格式
-    objectToEruptValue(object: any, eruptBuild: EruptBuildModel) {
+    objectToEruptValue(object: any, eruptBuild: EruptBuildModel, _scene: Scene = Scene.EDIT) {
         this.emptyEruptValue(eruptBuild);
         for (let field of eruptBuild.eruptModel.eruptFieldModels) {
             const edit = field.eruptFieldJson.edit;
@@ -536,7 +535,11 @@ export class DataHandlerService {
                     case EditType.TAB_TABLE_ADD:
                     case EditType.TAB_TABLE_REFER:
                         edit.$value = object[field.fieldName] || [];
-                        edit.$initValue = object[field.fieldName] || [];
+                        if(_scene = Scene.ADD){
+                            edit.$initValue = object[field.fieldName] || [];
+                        }else{
+                            edit.$initValue = []
+                        }
                         break;
                     default:
                         edit.$value = object[field.fieldName];

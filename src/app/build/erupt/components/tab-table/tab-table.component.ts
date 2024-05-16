@@ -260,26 +260,23 @@ export class TabTableComponent implements OnInit {
             viewValue.push(...this.uiBuildService.viewToAlainTableConfig(this.tabErupt.eruptBuildModel, false, true, null, null, true));
             this.column = viewValue;
         }
-        // let tabEdit = this.tabErupt.eruptFieldModel.eruptFieldJson.edit;
-        // if (!tabEdit.$value) {
-        //     tabEdit.$value = [];
-        //     this.data = this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$value
-        // }else {
-        //     this.data = this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$value
-        // }
     }
 
     addData() {
         let value =  <any>deepCopy(this.tabErupt.eruptFieldModel.eruptFieldJson.edit.$initValue)
         console.log("addData:", value)
-        let item = []
-        value.forEach(el => {
-            this.convertToLineItem(el, item, this.st._data.length + 1);
-        });
-        item.forEach(i => {
+        let items = []
+        const localItem = value[0];
+        // Object.keys(localItem).forEach(key => {
+        //     if (key != 'serialNumber'){
+        //         localItem[key] = null;
+        //     }
+        // })
+        this.convertToLineItem(localItem, items, this.st._data.length + 1);
+        items.forEach(i => {
             this.data.push(i)
         })
-        this.st.addRow(item, {index: this.st._data.length + 1} )
+        this.st.addRow(items, {index: this.st._data.length + 1} )
         // this.st.reload()
     }
 

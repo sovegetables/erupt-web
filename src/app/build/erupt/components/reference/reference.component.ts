@@ -27,6 +27,9 @@ export class ReferenceComponent implements OnInit {
 
     set field(field: EruptFieldModel) {
         this._field = field;
+        if(this.field.eruptFieldJson.edit.type == EditType.REFERENCE_TABLE){
+            this.enableAfterBtn = this.field.eruptFieldJson.edit.referenceTableType.showRightSearch
+        }
     }
 
     @Input() size: NzSizeLDSType;

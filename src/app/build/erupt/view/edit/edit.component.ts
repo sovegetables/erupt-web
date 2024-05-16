@@ -28,6 +28,10 @@ export class EditComponent implements OnInit, OnDestroy {
 
     @Input() eruptBuildModel: EruptBuildModel;
 
+    @Input() parentEruptName: string;
+
+    @Input() parentIds: any;
+
     @Input() id: any;
 
     //UI
@@ -52,23 +56,27 @@ export class EditComponent implements OnInit, OnDestroy {
         private settingSrv: SettingsService,
         private i18n: I18NService,
         private dataHandlerService: DataHandlerService) {
-
     }
 
     ngOnInit() {
         this.dataHandlerService.emptyEruptValue(this.eruptBuildModel);
         if (this.behavior == Scene.ADD) {
             this.loading = true;
-            this.dataService.getInitValue(this.eruptBuildModel.eruptModel.eruptName).subscribe(data => {
-                this.dataHandlerService.objectToEruptValue(data, this.eruptBuildModel);
+            this.dataService.getInitValue(
+                this.eruptBuildModel.eruptModel.eruptName,
+                this.parentEruptName,
+                {parentIds: this.parentIds})
+            .subscribe(data => {
+                this.dataHandlerService.objectToEruptValue(data, this.eruptBuildModel, this.behavior);
                 this.loading = false;
             });
         } else {
             this.loading = true;
             this.dataService.queryEruptDataById(this.eruptBuildModel.eruptModel.eruptName, this.id).subscribe(data => {
-                this.dataHandlerService.objectToEruptValue(data, this.eruptBuildModel);
+                this.dataHandlerService.objectToEruptValue(data, this.eruptBuildModel, this.behavior);
                 this.loading = false;
             });
+
         }
         this.eruptFieldModelMap = this.eruptBuildModel.eruptModel.eruptFieldModelMap;
     }

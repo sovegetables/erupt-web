@@ -151,6 +151,8 @@ export interface ReferenceTableType {
     id: string;
     label: string;
     dependField: string;
+    dependColumn: string;
+    showRightSearch: boolean;
 }
 
 interface BoolType {
